@@ -40,11 +40,11 @@ class BanCommand(val m: DreamNetworkBans) : AbstractCommand("ban", permission = 
 		m.bansColl.insertOne(ban)
 	
 		player.disconnect("""
-            §cVocê foi banido!
-            §cMotivo:
-
-            §a$effectiveReason
-            §cPor: ${sender.name}
+			§cVocê foi banido!
+			§cMotivo:
+			
+			§a$effectiveReason
+			§cPor: ${sender.name}
         """.trimIndent().toTextComponent())
 		sender.sendMessage("§a${player.name} (${player.uniqueId}) banido com sucesso pelo motivo \"$effectiveReason\"".toTextComponent())
 	}
