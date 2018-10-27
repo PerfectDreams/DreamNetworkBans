@@ -1,6 +1,5 @@
 package net.perfectdreams.dreamnetworkbans.listeners
 
-import com.mongodb.client.model.Filters
 import net.md_5.bungee.api.event.PlayerDisconnectEvent
 import net.md_5.bungee.api.event.PreLoginEvent
 import net.md_5.bungee.api.event.ServerKickEvent
@@ -8,6 +7,7 @@ import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
 import net.perfectdreams.dreamcorebungee.utils.extensions.toTextComponent
 import net.perfectdreams.dreamnetworkbans.DreamNetworkBans
+import net.perfectdreams.libs.com.mongodb.client.model.Filters
 import java.util.regex.Pattern
 
 class LoginListener(val m: DreamNetworkBans) : Listener {

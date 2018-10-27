@@ -1,7 +1,7 @@
 package net.perfectdreams.dreamnetworkbans.pojos
 
-import org.bson.codecs.pojo.annotations.BsonCreator
-import org.bson.codecs.pojo.annotations.BsonProperty
+import net.perfectdreams.libs.org.bson.codecs.pojo.annotations.BsonCreator
+import net.perfectdreams.libs.org.bson.codecs.pojo.annotations.BsonProperty
 
 class Ban @BsonCreator constructor(@BsonProperty("_id") _id: String) {
 	

@@ -1,9 +1,5 @@
 package net.perfectdreams.dreamnetworkbans
 
-import com.mongodb.MongoClient
-import com.mongodb.MongoClientOptions
-import com.mongodb.client.MongoCollection
-import com.mongodb.client.MongoDatabase
 import net.md_5.bungee.api.plugin.Plugin
 import net.perfectdreams.dreamcorebungee.DreamCoreBungee
 import net.perfectdreams.dreamnetworkbans.commands.BanCommand
@@ -11,8 +7,12 @@ import net.perfectdreams.dreamnetworkbans.commands.KickCommand
 import net.perfectdreams.dreamnetworkbans.commands.UnbanCommand
 import net.perfectdreams.dreamnetworkbans.listeners.LoginListener
 import net.perfectdreams.dreamnetworkbans.pojos.Ban
-import org.bson.codecs.configuration.CodecRegistries
-import org.bson.codecs.pojo.PojoCodecProvider
+import net.perfectdreams.libs.com.mongodb.MongoClient
+import net.perfectdreams.libs.com.mongodb.MongoClientOptions
+import net.perfectdreams.libs.com.mongodb.client.MongoCollection
+import net.perfectdreams.libs.com.mongodb.client.MongoDatabase
+import net.perfectdreams.libs.org.bson.codecs.configuration.CodecRegistries
+import net.perfectdreams.libs.org.bson.codecs.pojo.PojoCodecProvider
 
 class DreamNetworkBans : Plugin() {
 	
