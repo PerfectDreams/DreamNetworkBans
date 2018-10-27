@@ -82,7 +82,7 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 	@EventHandler
 	fun onDisconnect(event: ServerKickEvent) {
 		// TODO: Remover "event.kickReason", já que está deprecated :whatdog:
-		if (event.kickReason.toLowerCase() == "server closed" && event.kickedFrom.name != "sparklypower_lobby") {
+		if (event.kickReason.contains("Server closed", true) && event.kickedFrom.name != "sparklypower_lobby") {
 			event.player.connect(m.proxy.getServerInfo("sparklypower_lobby"))
 		}
 	}
