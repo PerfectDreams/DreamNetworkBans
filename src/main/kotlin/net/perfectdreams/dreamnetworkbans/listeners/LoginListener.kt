@@ -73,7 +73,6 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 					§a${foundIpBan.reason}
 					§cPor: ${foundIpBan.authorName}
 				""".trimIndent().toTextComponent())
-				
 				return
 			}
 		}
@@ -83,7 +82,8 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 	fun onDisconnect(event: ServerKickEvent) {
 		// TODO: Remover "event.kickReason", já que está deprecated :whatdog:
 		if (event.kickReason.contains("Server closed", true) && event.kickedFrom.name != "sparklypower_lobby") {
-			event.player.connect(m.proxy.getServerInfo("sparklypower_lobby"))
+			event.isCancelled = true
+			event.cancelServer = m.proxy.getServerInfo("sparklypower_lobby")
 		}
 	}
 }
