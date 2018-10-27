@@ -14,27 +14,27 @@ import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.pojo.PojoCodecProvider
 
 class DreamNetworkBans : Plugin() {
-
-    lateinit var mongo: MongoClient
-    lateinit var mongoDatabase: MongoDatabase
-    lateinit var bansColl: MongoCollection<Ban>
-
-    override fun onEnable() {
-        super.onEnable()
+	
+	lateinit var mongo: MongoClient
+	lateinit var mongoDatabase: MongoDatabase
+	lateinit var bansColl: MongoCollection<Ban>
+	
+	override fun onEnable() {
+		super.onEnable()
 		registerCommands()
-
-        val pojoCodecRegistry = CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry(),
-                CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build()))
-
-        val options = MongoClientOptions.builder()
-                .codecRegistry(pojoCodecRegistry)
-                .connectionsPerHost(750)
-                .build()
-
-        mongo = MongoClient(DreamCoreBungee.dreamConfig.mongoDbIp, options)
-        mongoDatabase = mongo.getDatabase(DreamCoreBungee.dreamConfig.serverDatabaseName)
-        bansColl = mongoDatabase.getCollection("bans", Ban::class.java)
-    }
+		
+		val pojoCodecRegistry = CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry(),
+				CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build()))
+		
+		val options = MongoClientOptions.builder()
+				.codecRegistry(pojoCodecRegistry)
+				.connectionsPerHost(750)
+				.build()
+		
+		mongo = MongoClient(DreamCoreBungee.dreamConfig.mongoDbIp, options)
+		mongoDatabase = mongo.getDatabase(DreamCoreBungee.dreamConfig.serverDatabaseName)
+		bansColl = mongoDatabase.getCollection("bans", Ban::class.java)
+	}
 	
 	fun registerCommands() {
 		BanCommand(this).register(this)

@@ -11,9 +11,9 @@ import net.perfectdreams.dreamnetworkbans.DreamNetworkBans
 import java.util.regex.Pattern
 
 class LoginListener(val m: DreamNetworkBans) : Listener {
-
-    @EventHandler
-    fun onLogin(event: PreLoginEvent) {
+	
+	@EventHandler
+	fun onLogin(event: PreLoginEvent) {
 		val pattern = Pattern.compile("[a-zA-Z0-9_]{3,16}")
 		val matcher = pattern.matcher(event.connection.name)
 		
@@ -77,10 +77,10 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 				return
 			}
 		}
-    }
+	}
 	
 	@EventHandler
-    fun onDisconnect(event: ServerKickEvent) {
+	fun onDisconnect(event: ServerKickEvent) {
 		// TODO: Remover "event.kickReason", já que está deprecated :whatdog:
 		if (event.kickReason.toLowerCase() == "server closed" && event.kickedFrom.name != "sparklypower_lobby") {
 			event.player.connect(m.proxy.getServerInfo("sparklypower_lobby"))
