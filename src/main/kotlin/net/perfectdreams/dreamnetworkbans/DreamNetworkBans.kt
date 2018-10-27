@@ -9,6 +9,7 @@ import net.perfectdreams.dreamcorebungee.DreamCoreBungee
 import net.perfectdreams.dreamnetworkbans.commands.BanCommand
 import net.perfectdreams.dreamnetworkbans.commands.KickCommand
 import net.perfectdreams.dreamnetworkbans.commands.UnbanCommand
+import net.perfectdreams.dreamnetworkbans.listeners.LoginListener
 import net.perfectdreams.dreamnetworkbans.pojos.Ban
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.pojo.PojoCodecProvider
@@ -22,6 +23,8 @@ class DreamNetworkBans : Plugin() {
 	override fun onEnable() {
 		super.onEnable()
 		registerCommands()
+		
+		this.proxy.pluginManager.registerListener(this, LoginListener(this))
 		
 		val pojoCodecRegistry = CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry(),
 				CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build()))
