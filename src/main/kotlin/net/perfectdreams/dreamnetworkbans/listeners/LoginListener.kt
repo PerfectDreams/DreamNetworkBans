@@ -31,66 +31,67 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 			return
 		}
 		
-		event.registerIntent(m)
-		m.proxy.scheduler.runAsync(m) {
-			if (event.connection.name.toLowerCase() in m.youtuberNames) {
-				event.connection.disconnect("""
+		if (event.connection.name.toLowerCase() in m.youtuberNames) {
+			event.connection.disconnect("""
 				§eVocê parece ser alguém famoso...
 					|
 					|§aCaso você seja §b${event.connection.name}§a, por favor, mande um email confirmando a sua identidade para §3leonardomalaman@gmail.com§a, obrigado! :)
 					|
 					|§aSei que é chato, mas sempre existem aquelas pessoas mal intencionadas que tentam se passar por YouTubers... :(
 					""".trimMargin().toTextComponent())
-			}
-			
-			val foundAccountBan = m.bansColl.find(
-					Filters.eq("_id", event.connection.uniqueId.toString())
-			).firstOrNull()
-			
-			if (foundAccountBan != null) {
-				event.connection.disconnect("""
+		}
+		
+		event.registerIntent(m)
+		val foundAccountBan = m.bansColl.find(
+				Filters.eq("_id", event.connection.uniqueId.toString())
+		).firstOrNull()
+		
+		if (foundAccountBan != null) {
+			event.connection.disconnect("""
 					§cVocê foi banido!
 					§cMotivo:
 					
 					§a${foundAccountBan.reason}
 					§cPor: ${foundAccountBan.authorName}
 				""".trimIndent().toTextComponent())
-				
-				return@runAsync
-			}
 			
-			val foundIpBan = m.bansColl.find(
-					Filters.eq("ip", event.connection.address.hostString)
-			).firstOrNull()
-			
-			if (foundIpBan != null) {
-				if (foundIpBan.isIpBan) {
-					event.connection.disconnect("""
+			event.completeIntent(m)
+			return
+		}
+		
+		val foundIpBan = m.bansColl.find(
+				Filters.eq("ip", event.connection.address.hostString)
+		).firstOrNull()
+		
+		if (foundIpBan != null) {
+			if (foundIpBan.isIpBan) {
+				event.connection.disconnect("""
 						§cVocê foi banido!
 						§cMotivo:
 						
 						§a${foundIpBan.reason}
 						§cPor: ${foundIpBan.authorName}
 				    """.trimIndent().toTextComponent())
-					
-					return@runAsync
-				}
 				
-				// O IP ban de uma semana por padrão ainda não expirou!
-				if (!foundIpBan.isIpBan && foundIpBan.timestamp + 604_800_000 > System.currentTimeMillis()) {
-					event.connection.disconnect("""
+				return
+			}
+			
+			// O IP ban de uma semana por padrão ainda não expirou!
+			if (!foundIpBan.isIpBan && foundIpBan.timestamp + 604_800_000 > System.currentTimeMillis()) {
+				event.connection.disconnect("""
 						§cVocê foi banido!
 						§cMotivo:
 						
 						§a${foundIpBan.reason}
 						§cPor: ${foundIpBan.authorName}
 					""".trimIndent().toTextComponent())
-					return@runAsync
-				}
+				return
 			}
 			
 			event.completeIntent(m)
 		}
+		
+		event.completeIntent(m)
 	}
 	
 	@EventHandler
