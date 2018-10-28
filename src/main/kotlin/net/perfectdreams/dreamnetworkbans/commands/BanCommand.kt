@@ -12,6 +12,16 @@ import net.perfectdreams.dreamnetworkbans.pojos.Ban
 
 class BanCommand(val m: DreamNetworkBans) : AbstractCommand("ban", permission = "dreamnetworkbans.ban", aliases = arrayOf("banir")) {
 
+	@Subcommand
+	fun root(sender: CommandSender) {
+		sender.sendMessage("§cUse /ban jogador motivo".toTextComponent())
+	}
+	
+	@Subcommand
+	fun withoutReason(sender: CommandSender, @InjectArgument(ArgumentType.PLAYER) player: ProxiedPlayer?) {
+		ban(sender, player, null)
+	}
+	
     @Subcommand
     fun ban(sender: CommandSender, @InjectArgument(ArgumentType.PLAYER) player: ProxiedPlayer?, @InjectArgument(ArgumentType.ARGUMENT_LIST) reason: String?) {
 		if (player == null) {
