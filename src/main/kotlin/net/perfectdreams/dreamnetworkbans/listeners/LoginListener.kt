@@ -90,8 +90,6 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 			
 			event.completeIntent(m)
 		}
-		
-		event.completeIntent(m)
 	}
 	
 	@EventHandler
