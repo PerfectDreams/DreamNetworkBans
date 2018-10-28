@@ -41,7 +41,7 @@ class DreamNetworkBans : Plugin() {
 	
 	fun registerCommands() {
 		BanCommand(this).register(this)
-		KickCommand().register(this)
+		KickCommand(this).register(this)
 		UnbanCommand(this).register(this)
 	}
 }
