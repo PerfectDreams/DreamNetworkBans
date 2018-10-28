@@ -7,8 +7,9 @@ import net.perfectdreams.dreamcorebungee.utils.commands.annotation.ArgumentType
 import net.perfectdreams.dreamcorebungee.utils.commands.annotation.InjectArgument
 import net.perfectdreams.dreamcorebungee.utils.commands.annotation.Subcommand
 import net.perfectdreams.dreamcorebungee.utils.extensions.toTextComponent
+import net.perfectdreams.dreamnetworkbans.DreamNetworkBans
 
-class KickCommand : AbstractCommand("kick", permission = "dreamnetworkbans.kick") {
+class KickCommand(val m: DreamNetworkBans) : AbstractCommand("kick", permission = "dreamnetworkbans.kick") {
 	
 	@Subcommand
     fun kick(sender: CommandSender, @InjectArgument(ArgumentType.PLAYER) player: ProxiedPlayer?, @InjectArgument(ArgumentType.ARGUMENT_LIST) reason: String?) {
@@ -17,6 +18,8 @@ class KickCommand : AbstractCommand("kick", permission = "dreamnetworkbans.kick"
 		}
 		
 		val effectiveReason = reason ?: "Sem motivo definido"
+		
+		m.proxy.broadcast("§c§l${sender.name}§c kickou §l${player.name}§c pelo motivo \"$effectiveReason\" no servidor ${player.server.info.name}".toTextComponent())
 		
 		player.disconnect("""
             §cVocê foi kickado!

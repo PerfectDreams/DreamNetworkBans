@@ -39,6 +39,7 @@ class BanCommand(val m: DreamNetworkBans) : AbstractCommand("ban", permission = 
 	
 		m.bansColl.insertOne(ban)
 	
+		m.proxy.broadcast("§c§l${sender.name}§c baniu §l${player.name}§c pelo motivo \"$effectiveReason\" no servidor ${player.server.info.name}".toTextComponent())
 		player.disconnect("""
 			§cVocê foi banido!
 			§cMotivo:
