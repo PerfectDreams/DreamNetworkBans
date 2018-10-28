@@ -2,6 +2,7 @@ package net.perfectdreams.dreamnetworkbans.commands
 
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.connection.ProxiedPlayer
+import net.perfectdreams.dreamcorebungee.network.DreamNetwork
 import net.perfectdreams.dreamcorebungee.utils.commands.AbstractCommand
 import net.perfectdreams.dreamcorebungee.utils.commands.annotation.ArgumentType
 import net.perfectdreams.dreamcorebungee.utils.commands.annotation.InjectArgument
@@ -50,6 +51,11 @@ class BanCommand(val m: DreamNetworkBans) : AbstractCommand("ban", permission = 
 		m.bansColl.insertOne(ban)
 	
 		m.proxy.broadcast("§c§l${sender.name}§c baniu §l${player.name}§c pelo motivo \"$effectiveReason\" no servidor ${player.server.info.name}".toTextComponent())
+		DreamNetwork.PANTUFA.sendMessage(
+				"378318041542426634",
+				"**${player.name}** foi banido permanentemente!\nFazer o que né, não soube ler as regras!\n\n**Banido pelo:** ${sender.name}\n**Motivo:** $effectiveReason\n**Servidor:** ${player.server.info.name}"
+		)
+		
 		player.disconnect("""
 			§cVocê foi banido!
 			§cMotivo:
