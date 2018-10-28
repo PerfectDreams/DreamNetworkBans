@@ -22,7 +22,7 @@ class KickCommand(val m: DreamNetworkBans) : AbstractCommand("kick", permission 
 		m.proxy.broadcast("§c§l${sender.name}§c kickou §l${player.name}§c pelo motivo \"$effectiveReason\" no servidor ${player.server.info.name}".toTextComponent())
 		
 		player.disconnect("""
-            §cVocê foi kickado!
+            §cVocê foi expulso do servidor!
             §cMotivo:
 
             §a$effectiveReason
