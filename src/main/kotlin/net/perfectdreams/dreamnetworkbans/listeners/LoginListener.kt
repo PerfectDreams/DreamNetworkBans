@@ -1,7 +1,6 @@
 package net.perfectdreams.dreamnetworkbans.listeners
 
-import net.md_5.bungee.api.event.PlayerDisconnectEvent
-import net.md_5.bungee.api.event.PreLoginEvent
+import net.md_5.bungee.api.event.LoginEvent
 import net.md_5.bungee.api.event.ServerKickEvent
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
@@ -13,7 +12,7 @@ import java.util.regex.Pattern
 class LoginListener(val m: DreamNetworkBans) : Listener {
 	
 	@EventHandler
-	fun onLogin(event: PreLoginEvent) {
+	fun onLogin(event: LoginEvent) {
 		val pattern = Pattern.compile("[a-zA-Z0-9_]{3,16}")
 		val matcher = pattern.matcher(event.connection.name)
 		
@@ -42,50 +41,56 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 		}
 		
 		event.registerIntent(m)
-		val foundAccountBan = m.bansColl.find(
-				Filters.eq("_id", event.connection.uniqueId.toString())
-		).firstOrNull()
 		
-		if (foundAccountBan != null) {
-			event.connection.disconnect("""
+		m.proxy.scheduler.runAsync(m) {
+			val foundAccountBan = m.bansColl.find(
+					Filters.eq("_id", event.connection.uniqueId.toString())
+			).firstOrNull()
+			
+			if (foundAccountBan != null) {
+				event.isCancelled = true
+				event.setCancelReason("""
 					§cVocê foi banido!
 					§cMotivo:
 					
 					§a${foundAccountBan.reason}
 					§cPor: ${foundAccountBan.authorName}
 				""".trimIndent().toTextComponent())
+				
+				return@runAsync event.completeIntent(m)
+			}
 			
-			event.completeIntent(m)
-			return
-		}
-		
-		val foundIpBan = m.bansColl.find(
-				Filters.eq("ip", event.connection.address.hostString)
-		).firstOrNull()
-		
-		if (foundIpBan != null) {
-			if (foundIpBan.isIpBan) {
-				event.connection.disconnect("""
+			val foundIpBan = m.bansColl.find(
+					Filters.eq("ip", event.connection.address.hostString)
+			).firstOrNull()
+			
+			if (foundIpBan != null) {
+				if (foundIpBan.isIpBan) {
+					event.isCancelled = true
+					event.setCancelReason("""
 						§cVocê foi banido!
 						§cMotivo:
 						
 						§a${foundIpBan.reason}
 						§cPor: ${foundIpBan.authorName}
 				    """.trimIndent().toTextComponent())
+					
+					return@runAsync event.completeIntent(m)
+				}
 				
-				return
-			}
-			
-			// O IP ban de uma semana por padrão ainda não expirou!
-			if (!foundIpBan.isIpBan && foundIpBan.timestamp + 604_800_000 > System.currentTimeMillis()) {
-				event.connection.disconnect("""
+				// O IP ban de uma semana por padrão ainda não expirou!
+				if (!foundIpBan.isIpBan && foundIpBan.timestamp + 604_800_000 > System.currentTimeMillis()) {
+					event.isCancelled = true
+					event.setCancelReason("""
 						§cVocê foi banido!
 						§cMotivo:
 						
 						§a${foundIpBan.reason}
 						§cPor: ${foundIpBan.authorName}
 					""".trimIndent().toTextComponent())
-				return
+					
+					return@runAsync event.completeIntent(m)
+				}
 			}
 			
 			event.completeIntent(m)
