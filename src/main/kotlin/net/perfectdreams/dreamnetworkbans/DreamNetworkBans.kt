@@ -15,6 +15,7 @@ import net.perfectdreams.libs.com.mongodb.client.MongoDatabase
 import net.perfectdreams.libs.org.bson.codecs.configuration.CodecRegistries
 import net.perfectdreams.libs.org.bson.codecs.pojo.PojoCodecProvider
 import java.io.File
+import java.util.*
 
 class DreamNetworkBans : Plugin() {
 	
@@ -55,4 +56,7 @@ class DreamNetworkBans : Plugin() {
 		UnbanCommand(this).register(this)
 		YouTuberAssistCommand(this).register(this)
 	}
+	
+	fun getOfflineUUID(name: String) = UUID.nameUUIDFromBytes("OfflinePlayer:$name".toByteArray())
+	
 }

@@ -10,6 +10,7 @@ import net.perfectdreams.dreamcorebungee.utils.commands.annotation.Subcommand
 import net.perfectdreams.dreamcorebungee.utils.extensions.toTextComponent
 import net.perfectdreams.dreamnetworkbans.DreamNetworkBans
 import net.perfectdreams.dreamnetworkbans.pojos.Ban
+import java.util.*
 
 class BanCommand(val m: DreamNetworkBans) : AbstractCommand("ban", permission = "dreamnetworkbans.ban", aliases = arrayOf("banir")) {
 
@@ -19,51 +20,59 @@ class BanCommand(val m: DreamNetworkBans) : AbstractCommand("ban", permission = 
 	}
 	
 	@Subcommand
-	fun withoutReason(sender: CommandSender, @InjectArgument(ArgumentType.PLAYER) player: ProxiedPlayer?) {
+	fun withoutReason(sender: CommandSender, player: String) {
 		ban(sender, player, null)
 	}
 	
     @Subcommand
-    fun ban(sender: CommandSender, @InjectArgument(ArgumentType.PLAYER) player: ProxiedPlayer?, @InjectArgument(ArgumentType.ARGUMENT_LIST) reason: String?) {
-		if (player == null) {
-			return sender.sendMessage("§cEste jogador não pôde ser encontrado!".toTextComponent())
+    fun ban(sender: CommandSender, player: String, @InjectArgument(ArgumentType.ARGUMENT_LIST) reason: String?) {
+		var effectiveReason = reason ?: "Sem motivo definido"
+		
+		var silent = false
+		if (effectiveReason.endsWith("-s")) {
+			silent = true
+			
+			effectiveReason = effectiveReason.substring(0, (effectiveReason.length - "-s".length) - 1)
 		}
+		
+		val uuid = m.getOfflineUUID(player).toString()
+		val ban = Ban(uuid)
 	
-		val effectiveReason = reason ?: "Sem motivo definido"
-	
-		val ban = Ban(player.uniqueId.toString())
-	
-		ban.author = if (sender is ProxiedPlayer) {
-			sender.uniqueId.toString()
-		} else {
-			"CONSOLE"
-		}
+		val proxiedPlayer = m.proxy.getPlayer(player)
+		
+		ban.author = (sender as? ProxiedPlayer)?.uniqueId?.toString() ?: "CONSOLE"
 	
 		ban.authorName = if (sender is ProxiedPlayer) sender.name else "Servidor"
-	
-		ban.ip = player.address.hostString
 		ban.reason = effectiveReason
+		ban.playerName = player
 	
-		ban.playerName = player.name
+		announceBan(player, sender, effectiveReason, silent)
 	
-		ban.isIpBan = false
-	
-		m.bansColl.insertOne(ban)
-	
-		m.proxy.broadcast("§c§l${sender.name}§c baniu §l${player.name}§c pelo motivo \"$effectiveReason\" no servidor ${player.server.info.name}".toTextComponent())
-		DreamNetwork.PANTUFA.sendMessage(
-				"378318041542426634",
-				"**${player.name}** foi banido permanentemente!\nFazer o que né, não soube ler as regras!\n\n**Banido pelo:** ${sender.name}\n**Motivo:** $effectiveReason\n**Servidor:** ${player.server.info.name}"
-		)
-		
-		player.disconnect("""
+		proxiedPlayer?.disconnect("""
 			§cVocê foi banido!
 			§cMotivo:
 			
 			§a$effectiveReason
 			§cPor: ${sender.name}
         """.trimIndent().toTextComponent())
-		sender.sendMessage("§a${player.name} (${player.uniqueId}) banido com sucesso pelo motivo \"$effectiveReason\"".toTextComponent())
+	
+		sender.sendMessage("§a$player ($uuid) banido com sucesso!".toTextComponent())
+		m.bansColl.insertOne(ban)
+	}
+	
+	fun announceBan(playerName: String, author: CommandSender, reason: String, silent: Boolean) {
+		if (silent) {
+			DreamNetwork.PANTUFA.sendMessage(
+					"506859824034611212",
+					"**$playerName** foi banido permanentemente!\nFazer o que né, não soube ler as regras!\n\n**Banido pelo:** ${author.name}\n**Motivo:** $reason\n**Servidor:** ${(author as? ProxiedPlayer)?.server?.info?.name ?: "Desconhecido"}"
+			)
+		} else {
+			m.proxy.broadcast("§c§l${author.name}§c baniu §l$playerName§c pelo motivo \"$reason\" no servidor ${(author as? ProxiedPlayer)?.server?.info?.name ?: "Desconhecido"}".toTextComponent())
+			DreamNetwork.PANTUFA.sendMessage(
+					"378318041542426634",
+					"**$playerName** foi banido permanentemente!\nFazer o que né, não soube ler as regras!\n\n**Banido pelo:** ${author.name}\n**Motivo:** $reason\n**Servidor:** ${(author as? ProxiedPlayer)?.server?.info?.name ?: "Desconhecido"}"
+			)
+		}
 	}
 
 }
