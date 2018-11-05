@@ -18,13 +18,16 @@ class KickCommand(val m: DreamNetworkBans) : AbstractCommand("kick", permission 
 			return sender.sendMessage("§cEste jogador não pôde ser encontrado!".toTextComponent())
 		}
 		
-		val effectiveReason = reason ?: "Sem motivo definido"
+		var effectiveReason = reason ?: "Sem motivo definido"
 		
-		m.proxy.broadcast("§c§l${sender.name}§c kickou §l${player.name}§c pelo motivo \"$effectiveReason\" no servidor ${player.server.info.name}".toTextComponent())
-		DreamNetwork.PANTUFA.sendMessage(
-				"378318041542426634",
-				"**${player.name}** foi expulso!\nFazer o que né, não soube ler as regras!\n\n**Expulso pelo:** ${sender.name}\n**Motivo:** $effectiveReason\n**Servidor:** ${player.server.info.name}"
-		)
+		var silent = false
+		if (effectiveReason.endsWith("-s")) {
+			silent = true
+			
+			effectiveReason = effectiveReason.substring(0, (effectiveReason.length - "-s".length) - 1)
+		}
+		
+		announceKick(player.name, sender, effectiveReason, silent)
 		
 		player.disconnect("""
             §cVocê foi expulso do servidor!
@@ -35,5 +38,20 @@ class KickCommand(val m: DreamNetworkBans) : AbstractCommand("kick", permission 
 			§7Não se preocupe, você poderá voltar a jogar simplesmente entrando novamente no servidor!
 		""".trimIndent().toTextComponent())
 		sender.sendMessage("§a${player.name} (${player.uniqueId}) kickado com sucesso pelo motivo \"$effectiveReason\"".toTextComponent())
+	}
+	
+	fun announceKick(playerName: String, author: CommandSender, reason: String, silent: Boolean) {
+		if (silent) {
+			DreamNetwork.PANTUFA.sendMessage(
+					"506859824034611212",
+					"**$playerName** foi expulso!\nFazer o que né, não soube ler as regras!\n\n**Expulso pelo:** ${author.name}\n**Motivo:** $reason\n**Servidor:** ${(author as? ProxiedPlayer)?.server?.info?.name ?: "Desconhecido"}"
+			)
+		} else {
+			m.proxy.broadcast("§c§l${author.name}§c expulsou §l$playerName§c pelo motivo \"$reason\" no servidor ${(author as? ProxiedPlayer)?.server?.info?.name ?: "Desconhecido"}".toTextComponent())
+			DreamNetwork.PANTUFA.sendMessage(
+					"378318041542426634",
+					"**$playerName** foi expulso!\nFazer o que né, não soube ler as regras!\n\n**Expulso pelo:** ${author.name}\n**Motivo:** $reason\n**Servidor:** ${(author as? ProxiedPlayer)?.server?.info?.name ?: "Desconhecido"}"
+			)
+		}
 	}
 }
