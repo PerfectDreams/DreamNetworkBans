@@ -1,6 +1,5 @@
 package net.perfectdreams.dreamnetworkbans.tables
 
-import net.perfectdreams.dreamnetworkbans.tables.Bans.nullable
 import org.jetbrains.exposed.dao.LongIdTable
 
 // Esta table é um long boi
