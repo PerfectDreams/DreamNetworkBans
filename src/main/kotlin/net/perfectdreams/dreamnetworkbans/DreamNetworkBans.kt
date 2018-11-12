@@ -35,7 +35,7 @@ class DreamNetworkBans : Plugin() {
 
 		transaction(Databases.databaseNetwork) {
 			SchemaUtils.create(
-					Bans
+					Bans,
 					// IpBans,
 					Warns,
 					Fingerprints
