@@ -1,21 +1,28 @@
 package net.perfectdreams.dreamnetworkbans.commands
 
 import net.md_5.bungee.api.CommandSender
+import net.perfectdreams.dreamcorebungee.utils.Databases
 import net.perfectdreams.dreamcorebungee.utils.commands.AbstractCommand
 import net.perfectdreams.dreamcorebungee.utils.commands.annotation.Subcommand
 import net.perfectdreams.dreamcorebungee.utils.extensions.toTextComponent
 import net.perfectdreams.dreamnetworkbans.DreamNetworkBans
+import net.perfectdreams.dreamnetworkbans.PunishmentManager
+import net.perfectdreams.dreamnetworkbans.tables.Bans
 import net.perfectdreams.libs.com.mongodb.client.model.Filters
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.transactions.transaction
+import java.lang.IllegalArgumentException
+import java.util.*
 
 class UnbanCommand(val m: DreamNetworkBans) : AbstractCommand("unban", permission = "dreamnetworkbans.unban") {
-	
 	@Subcommand
     fun unban(sender: CommandSender, playerName: String) {
-		val foundBan = m.bansColl.find(
-				Filters.eq("playerName", playerName)
-		).firstOrNull() ?: return sender.sendMessage("§cEste jogador não está banido!".toTextComponent())
-		
-		m.bansColl.deleteOne(Filters.eq("_id", foundBan.uuid))
-		sender.sendMessage("§a${foundBan.playerName} (${foundBan.uuid}) desbanido com sucesso!".toTextComponent())
+		val punishedUniqueId = try { UUID.fromString(playerName) } catch (e: IllegalArgumentException) { PunishmentManager.getUniqueId(playerName) }
+
+		transaction(Databases.databaseNetwork) {
+			Bans.deleteWhere { Bans.player eq punishedUniqueId }
+		}
+
+		sender.sendMessage("§b$punishedUniqueId§a desbanido com sucesso!".toTextComponent())
 	}
 }

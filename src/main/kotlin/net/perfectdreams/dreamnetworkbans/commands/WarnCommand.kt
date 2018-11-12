@@ -2,7 +2,6 @@ package net.perfectdreams.dreamnetworkbans.commands
 
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.connection.ProxiedPlayer
-import net.perfectdreams.dreamcorebungee.network.DreamNetwork
 import net.perfectdreams.dreamcorebungee.utils.Databases
 import net.perfectdreams.dreamcorebungee.utils.commands.AbstractCommand
 import net.perfectdreams.dreamcorebungee.utils.commands.annotation.ArgumentType
@@ -12,22 +11,13 @@ import net.perfectdreams.dreamcorebungee.utils.extensions.toTextComponent
 import net.perfectdreams.dreamnetworkbans.DreamNetworkBans
 import net.perfectdreams.dreamnetworkbans.dao.Ban
 import net.perfectdreams.dreamnetworkbans.dao.IpBan
+import net.perfectdreams.dreamnetworkbans.dao.Warn
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
-class BanCommand(val m: DreamNetworkBans) : AbstractCommand("ban", permission = "dreamnetworkbans.ban", aliases = arrayOf("banir")) {
+class WarnCommand(val m: DreamNetworkBans) : AbstractCommand("warn", permission = "dreamnetworkbans.warn", aliases = arrayOf("avisar")) {
 	@Subcommand
-	fun root(sender: CommandSender) {
-		sender.sendMessage("§cUse /ban jogador motivo".toTextComponent())
-	}
-	
-	@Subcommand
-	fun withoutReason(sender: CommandSender, player: String) {
-		ban(sender, player, null)
-	}
-
-	@Subcommand
-	fun ban(sender: CommandSender, playerName: String, @InjectArgument(ArgumentType.ARGUMENT_LIST) reason: String?) {
+	fun warn(sender: CommandSender, playerName: String, @InjectArgument(ArgumentType.ARGUMENT_LIST) reason: String?) {
 		var punishedUniqueId: UUID? = null
 		var punishedDisplayName: String? = null
 
@@ -59,56 +49,26 @@ class BanCommand(val m: DreamNetworkBans) : AbstractCommand("ban", permission = 
 
 		// ...blah
 		if (punishedUniqueId == null && punishedDisplayName == null) {
-			sender.sendMessage("§cEu sei que você tá correndo para banir aquele mlk meliante... mas eu não conheço ninguém chamado §b$playerName§c... respira um pouco... fica calmo e VEJA O NOME NOVAMENTE!".toTextComponent())
+			sender.sendMessage("§cEu sei que você tá correndo para avisar aquele mlk meliante... mas eu não conheço ninguém chamado §b$playerName§c... respira um pouco... fica calmo e VEJA O NOME NOVAMENTE!".toTextComponent())
 			return
 		}
 
-		var effectiveReason = reason ?: "Sem motivo definido"
-		
-		var silent = false
-		if (effectiveReason.endsWith("-s")) {
-			silent = true
-			
-			effectiveReason = effectiveReason.substring(0, (effectiveReason.length - "-s".length) - 1)
-		}
+		val effectiveReason = reason ?: "Sem motivo definido"
 
 		val punisherDisplayName = if (sender is ProxiedPlayer) {
 			sender.name
 		} else { "Pantufa" }
 
 		transaction(Databases.databaseNetwork) {
-			Ban.new {
+			Warn.new {
 				this.player = player.uniqueId
 				this.punishedBy = punishedUniqueId
 				this.punishedAt = System.currentTimeMillis()
 				this.reason = effectiveReason
-				this.temporary = false
 			}
 		}
 
-		// Vamos expulsar o player ao ser banido
-		player.disconnect("""
-			§cVocê foi banido!
-			§cMotivo:
-
-			§a$effectiveReason
-			§cPor: ${punishedDisplayName}
-        """.trimIndent().toTextComponent())
-
 		sender.sendMessage("§b${punishedDisplayName}§a foi punido com sucesso, yay!! ^-^".toTextComponent())
-		m.proxy.broadcast("§b${punisherDisplayName}§a baniu §c${punishedDisplayName}§a por §6\"§e${effectiveReason}§6\"§a!".toTextComponent())
-
-		if (silent) {
-			DreamNetwork.PANTUFA.sendMessage(
-					"506859824034611212",
-					"**$playerName** foi banido permanentemente!\nFazer o que né, não soube ler as regras!\n\n**Banido pelo:** ${punisherDisplayName}\n**Motivo:** $reason\n**Servidor:** ${player?.server?.info?.name ?: "Desconhecido"}"
-			)
-		} else {
-			m.proxy.broadcast("§c§l${punisherDisplayName}§c baniu §l$playerName§c por \"$reason\" no servidor ${player?.server?.info?.name ?: "Desconhecido"}".toTextComponent())
-			DreamNetwork.PANTUFA.sendMessage(
-					"378318041542426634",
-					"**$playerName** foi banido permanentemente!\nFazer o que né, não soube ler as regras!\n\n**Banido pelo:** ${punisherDisplayName}\n**Motivo:** $reason\n**Servidor:** ${player?.server?.info?.name ?: "Desconhecido"}"
-			)
-		}
+		m.proxy.broadcast("§b${punisherDisplayName}§a deu um aviso em §c${punishedDisplayName}§a por §6\"§e${effectiveReason}§6\"§a!".toTextComponent())
 	}
 }
