@@ -2,6 +2,7 @@ package net.perfectdreams.dreamnetworkbans.commands
 
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.connection.ProxiedPlayer
+import net.perfectdreams.dreamcorebungee.network.DreamNetwork
 import net.perfectdreams.dreamcorebungee.utils.Databases
 import net.perfectdreams.dreamcorebungee.utils.commands.AbstractCommand
 import net.perfectdreams.dreamcorebungee.utils.commands.annotation.ArgumentType
@@ -61,8 +62,8 @@ class WarnCommand(val m: DreamNetworkBans) : AbstractCommand("warn", permission 
 
 		transaction(Databases.databaseNetwork) {
 			Warn.new {
-				this.player = player.uniqueId
-				this.punishedBy = punishedUniqueId
+				this.player = punishedUniqueId!!
+				this.punishedBy = player.uniqueId
 				this.punishedAt = System.currentTimeMillis()
 				this.reason = effectiveReason
 			}
@@ -70,5 +71,9 @@ class WarnCommand(val m: DreamNetworkBans) : AbstractCommand("warn", permission 
 
 		sender.sendMessage("§b${punishedDisplayName}§a foi punido com sucesso, yay!! ^-^".toTextComponent())
 		m.proxy.broadcast("§b${punisherDisplayName}§a deu um aviso em §c${punishedDisplayName}§a por §6\"§e${effectiveReason}§6\"§a!".toTextComponent())
+		DreamNetwork.PANTUFA.sendMessage(
+				"378318041542426634",
+				"**$playerName** foi avisado!\nFazer o que né, não soube ler as regras!\n\n**Avisado pelo:** ${punisherDisplayName}\n**Motivo:** $reason\n**Servidor:** ${player?.server?.info?.name ?: "Desconhecido"}"
+		)
 	}
 }

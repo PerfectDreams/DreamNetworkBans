@@ -78,8 +78,8 @@ class BanCommand(val m: DreamNetworkBans) : AbstractCommand("ban", permission = 
 
 		transaction(Databases.databaseNetwork) {
 			Ban.new {
-				this.player = player.uniqueId
-				this.punishedBy = punishedUniqueId
+				this.player = punishedUniqueId!!
+				this.punishedBy = player.uniqueId
 				this.punishedAt = System.currentTimeMillis()
 				this.reason = effectiveReason
 				this.temporary = false
@@ -87,12 +87,12 @@ class BanCommand(val m: DreamNetworkBans) : AbstractCommand("ban", permission = 
 		}
 
 		// Vamos expulsar o player ao ser banido
-		player.disconnect("""
+		player?.disconnect("""
 			§cVocê foi banido!
 			§cMotivo:
 
 			§a$effectiveReason
-			§cPor: ${punishedDisplayName}
+			§cPor: $punisherDisplayName
         """.trimIndent().toTextComponent())
 
 		sender.sendMessage("§b${punishedDisplayName}§a foi punido com sucesso, yay!! ^-^".toTextComponent())
