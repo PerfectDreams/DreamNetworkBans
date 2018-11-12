@@ -10,6 +10,7 @@ import net.perfectdreams.dreamcorebungee.utils.commands.annotation.InjectArgumen
 import net.perfectdreams.dreamcorebungee.utils.commands.annotation.Subcommand
 import net.perfectdreams.dreamcorebungee.utils.extensions.toTextComponent
 import net.perfectdreams.dreamnetworkbans.DreamNetworkBans
+import net.perfectdreams.dreamnetworkbans.PunishmentManager
 import net.perfectdreams.dreamnetworkbans.dao.Ban
 import net.perfectdreams.dreamnetworkbans.dao.IpBan
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -54,6 +55,10 @@ class BanCommand(val m: DreamNetworkBans) : AbstractCommand("ban", permission = 
 					// Caso o UUID seja != null, quer dizer que ele É UM UUID VÁLIDO!!
 					punishedDisplayName = punishedUniqueId.toString()
 				}
+			} else {
+				// Se não, vamos processar como se fosse um player mesmo
+				punishedDisplayName = playerName
+				punishedUniqueId = PunishmentManager.getUniqueId(playerName)
 			}
 		}
 
@@ -79,7 +84,7 @@ class BanCommand(val m: DreamNetworkBans) : AbstractCommand("ban", permission = 
 		transaction(Databases.databaseNetwork) {
 			Ban.new {
 				this.player = punishedUniqueId!!
-				this.punishedBy = player.uniqueId
+				this.punishedBy = punishedUniqueId
 				this.punishedAt = System.currentTimeMillis()
 				this.reason = effectiveReason
 				this.temporary = false

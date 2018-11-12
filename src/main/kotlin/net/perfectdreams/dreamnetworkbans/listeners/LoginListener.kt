@@ -21,6 +21,7 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 		val matcher = pattern.matcher(event.connection.name)
 
 		if (!matcher.find()) {
+			event.isCancelled = true
 			event.setCancelReason("""
 				§cSeu nickname não atende aos critérios necessários!
 
@@ -34,6 +35,7 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 		}
 
 		if (event.connection.name.toLowerCase() in m.youtuberNames) {
+			event.isCancelled = true
 			event.setCancelReason("""
 				§eVocê parece ser alguém famoso...
 					|
@@ -52,6 +54,7 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 			}
 
 			if (ban != null) {
+				event.isCancelled = true
 				event.setCancelReason("""
 				§cVocê foi banido!
 				§cMotivo:
