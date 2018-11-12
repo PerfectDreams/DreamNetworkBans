@@ -42,8 +42,8 @@ class CheckBanCommand(val m: DreamNetworkBans) : AbstractCommand("checkban", per
 			}
 
 			val warns = Warn.find { Warns.player eq punishedUniqueId }.toMutableList()
-			val validWarns = warns.filter { PunishmentManager.WARN_EXPIRATION + it.punishedAt >= System.currentTimeMillis() }.sortedBy { it.punishedAt }
-			val invalidWarns = warns.filter { System.currentTimeMillis() >= PunishmentManager.WARN_EXPIRATION + it.punishedAt }.sortedBy { it.punishedAt }
+			val validWarns = warns.filter { System.currentTimeMillis() >= PunishmentManager.WARN_EXPIRATION + it.punishedAt }.sortedBy { it.punishedAt }
+			val invalidWarns = warns.filter { PunishmentManager.WARN_EXPIRATION + it.punishedAt >= System.currentTimeMillis() }.sortedBy { it.punishedAt }
 			sender.sendMessage("§eNúmero de avisos (${validWarns.size} avisos válidos):".toTextComponent())
 			for (invalidWarn in invalidWarns) {
 				sender.sendMessage("§7${invalidWarn.reason} §epor §b${invalidWarn.punishedBy}".toTextComponent())
