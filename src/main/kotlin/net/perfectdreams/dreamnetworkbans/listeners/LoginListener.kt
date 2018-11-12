@@ -81,6 +81,7 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 		transaction(Databases.databaseNetwork) {
 			Fingerprint.new {
 				this.player = event.player.uniqueId
+				this.createdAt = System.currentTimeMillis()
 				this.isForgeUser = event.player.isForgeUser
 				this.chatMode = event.player.chatMode
 				this.mainHand = event.player.mainHand
