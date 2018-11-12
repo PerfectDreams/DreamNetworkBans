@@ -37,8 +37,8 @@ class DreamNetworkBans : Plugin() {
 			SchemaUtils.create(
 					Bans
 					// IpBans,
-					// Warns,
-					// Fingerprints
+					Warns,
+					Fingerprints
 			)
 		}
 	}
