@@ -11,12 +11,13 @@ import net.perfectdreams.dreamcorebungee.utils.extensions.toTextComponent
 import net.perfectdreams.dreamnetworkbans.DreamNetworkBans
 import net.perfectdreams.dreamnetworkbans.dao.Ban
 import net.perfectdreams.dreamnetworkbans.dao.IpBan
+import net.perfectdreams.dreamnetworkbans.dao.Warn
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
-class BanCommand(val m: DreamNetworkBans) : AbstractCommand("ban", permission = "dreamnetworkbans.ban", aliases = arrayOf("banir")) {
+class WarnCommand(val m: DreamNetworkBans) : AbstractCommand("warn", permission = "dreamnetworkbans.warn", aliases = arrayOf("avisar")) {
 	@Subcommand
-	fun ban(sender: CommandSender, playerName: String, @InjectArgument(ArgumentType.ARGUMENT_LIST) reason: String?) {
+	fun warn(sender: CommandSender, playerName: String, @InjectArgument(ArgumentType.ARGUMENT_LIST) reason: String?) {
 		var punishedUniqueId: UUID? = null
 		var punishedDisplayName: String? = null
 
@@ -48,7 +49,7 @@ class BanCommand(val m: DreamNetworkBans) : AbstractCommand("ban", permission = 
 
 		// ...blah
 		if (punishedUniqueId == null && punishedDisplayName == null) {
-			sender.sendMessage("§cEu sei que você tá correndo para banir aquele mlk meliante... mas eu não conheço ninguém chamado §b$playerName§c... respira um pouco... fica calmo e VEJA O NOME NOVAMENTE!".toTextComponent())
+			sender.sendMessage("§cEu sei que você tá correndo para avisar aquele mlk meliante... mas eu não conheço ninguém chamado §b$playerName§c... respira um pouco... fica calmo e VEJA O NOME NOVAMENTE!".toTextComponent())
 			return
 		}
 
@@ -59,25 +60,15 @@ class BanCommand(val m: DreamNetworkBans) : AbstractCommand("ban", permission = 
 		} else { "Pantufa" }
 
 		transaction(Databases.databaseNetwork) {
-			Ban.new {
+			Warn.new {
 				this.player = player.uniqueId
 				this.punishedBy = punishedUniqueId
 				this.punishedAt = System.currentTimeMillis()
 				this.reason = effectiveReason
-				this.temporary = false
 			}
 		}
 
-		// Vamos expulsar o player ao ser banido
-		player.disconnect("""
-			§cVocê foi banido!
-			§cMotivo:
-			
-			§a$effectiveReason
-			§cPor: ${sender.name}
-        """.trimIndent().toTextComponent())
-
 		sender.sendMessage("§b${punishedDisplayName}§a foi punido com sucesso, yay!! ^-^".toTextComponent())
-		m.proxy.broadcast("§b${punisherDisplayName}§a baniu §c${punishedDisplayName}§a por §6\"§e${effectiveReason}§6\"§a!".toTextComponent())
+		m.proxy.broadcast("§b${punisherDisplayName}§a deu um aviso em §c${punishedDisplayName}§a por §6\"§e${effectiveReason}§6\"§a!".toTextComponent())
 	}
 }
