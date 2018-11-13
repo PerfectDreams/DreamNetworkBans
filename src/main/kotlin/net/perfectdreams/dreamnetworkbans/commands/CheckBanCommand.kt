@@ -37,7 +37,7 @@ class CheckBanCommand(val m: DreamNetworkBans) : AbstractCommand("checkban", per
 			sender.sendMessage("§eBanido? ${(ban != null).prettyBoolean()}".toTextComponent())
 			if (ban != null) {
 				sender.sendMessage("§eMotivo do Ban: ${ban.reason}".toTextComponent())
-				sender.sendMessage("§eQuem baniu? §b${ban.punishedBy}".toTextComponent())
+				sender.sendMessage("§eQuem baniu? §b${ban.punisherName}".toTextComponent())
 				sender.sendMessage("§eTemporário? §b${(ban.temporary).prettyBoolean()}".toTextComponent())
 			}
 

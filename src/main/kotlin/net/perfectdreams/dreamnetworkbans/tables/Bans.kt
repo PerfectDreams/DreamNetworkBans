@@ -11,6 +11,7 @@ object Bans : LongIdTable() {
 	// Punido por...
 	// Sim, pode ser nulo, caso seja nulo, iremos colocar quem puniu como "Pantufa"
 	val punishedBy = uuid("punished_by").nullable()
+	val punisherName = text("punisher_name")
 	val punishedAt = long("punished_at")
 	// Motivo da punição
 	val reason = text("reason").nullable()

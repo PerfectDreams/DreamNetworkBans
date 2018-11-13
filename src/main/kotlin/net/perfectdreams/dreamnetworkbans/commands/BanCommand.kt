@@ -84,6 +84,7 @@ class BanCommand(val m: DreamNetworkBans) : AbstractCommand("ban", permission = 
 		transaction(Databases.databaseNetwork) {
 			Ban.new {
 				this.player = punishedUniqueId!!
+				this.punisherName = punisherDisplayName
 				this.punishedBy = punishedUniqueId
 				this.punishedAt = System.currentTimeMillis()
 				this.reason = effectiveReason

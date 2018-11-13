@@ -10,6 +10,7 @@ class Ban(id: EntityID<Long>) : LongEntity(id) {
 
 	var player by Bans.player
 	var punishedBy by Bans.punishedBy
+	var punisherName by Bans.punisherName
 	var punishedAt by Bans.punishedAt
 	var reason by Bans.reason
 	var temporary by Bans.temporary
