@@ -85,13 +85,13 @@ class WarnCommand(val m: DreamNetworkBans) : AbstractCommand("warn", permission 
 		if (silent) {
 			DreamNetwork.PANTUFA.sendMessage(
 					"506859824034611212",
-					"**$playerName** foi avisado!\nFazer o que né, não soube ler as regras!\n\n**Avisado pelo:** ${punisherDisplayName}\n**Motivo:** $reason\n**Servidor:** ${player?.server?.info?.name ?: "Desconhecido"}"
+					"**$playerName** foi avisado!\nFazer o que né, não soube ler as regras!\n\n**Avisado pelo:** ${punisherDisplayName}\n**Motivo:** $effectiveReason\n**Servidor:** ${player?.server?.info?.name ?: "Desconhecido"}"
 			)
 		} else {
 			m.proxy.broadcast("§b${punisherDisplayName}§a deu um aviso em §c${punishedDisplayName}§a por §6\"§e${effectiveReason}§6\"§a!".toTextComponent())
 			DreamNetwork.PANTUFA.sendMessage(
 					"378318041542426634",
-					"**$playerName** foi avisado!\nFazer o que né, não soube ler as regras!\n\n**Avisado pelo:** ${punisherDisplayName}\n**Motivo:** $reason\n**Servidor:** ${player?.server?.info?.name ?: "Desconhecido"}"
+					"**$playerName** foi avisado!\nFazer o que né, não soube ler as regras!\n\n**Avisado pelo:** ${punisherDisplayName}\n**Motivo:** $effectiveReason\n**Servidor:** ${player?.server?.info?.name ?: "Desconhecido"}"
 			)
 		}
 	}
