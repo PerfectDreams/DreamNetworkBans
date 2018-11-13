@@ -31,7 +31,9 @@ class UnwarnCommand : AbstractCommand("unwarn", permission = "dreamnetworkbans.u
 			return
 		}
 		
-		warn.delete()
+		transaction(Databases.databaseNetwork) {
+			warn.delete()
+		}
 		sender.sendMessage("§aAviso removido com sucesso!!!".toTextComponent())
 	}
 }
