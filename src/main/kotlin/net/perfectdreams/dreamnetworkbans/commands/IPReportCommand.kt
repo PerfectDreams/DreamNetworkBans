@@ -14,17 +14,14 @@ class IPReportCommand(val m: DreamNetworkBans) : AbstractCommand("ipreport", per
 	
 	@Subcommand
 	fun ipreport(sender: CommandSender) {
-		var message = ""
-		
-		for (player in m.proxy.players) {
+		sender.sendMessage("§cResumo dos players que estão online (${m.proxy.players.size}):".toTextComponent())
+		sender.sendMessage(m.proxy.players.joinToString("\n") {
 			val geoLocalization = transaction(Databases.databaseNetwork) {
-				GeoLocalization.find { GeoLocalizations.player eq player.uniqueId }.firstOrNull()
+				GeoLocalization.find { GeoLocalizations.player eq it.uniqueId }.firstOrNull()
 			}
 			
-			message += "§c${player.name} => ${player.address.hostString} - (${geoLocalization?.country ?: "???"}, ${geoLocalization?.region ?: "???"})\n"
-		}
+			"§c${it.name} (${it.address.hostString} - ${geoLocalization?.country ?: "???"}, ${geoLocalization?.region ?: "???"})"
+		}.toTextComponent())
 		
-		sender.sendMessage("§cResumo dos players que estão online (${m.proxy.players.size}):".toTextComponent())
-		sender.sendMessage(message.toTextComponent())
 	}
 }
