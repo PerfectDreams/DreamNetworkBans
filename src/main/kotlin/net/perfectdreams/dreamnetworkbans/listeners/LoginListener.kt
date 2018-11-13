@@ -54,7 +54,7 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 		
 		m.proxy.scheduler.runAsync(m) {
 			val geoLocalization = transaction(Databases.databaseNetwork) {
-				GeoLocalization.find { GeoLocalizations.player eq event.connection.uniqueId }.firstOrNull()
+				GeoLocalization.find { GeoLocalizations.ip eq event.connection.address.hostString }.firstOrNull()
 			}
 			
 			if (geoLocalization == null) {
