@@ -13,6 +13,7 @@ object Fingerprints : LongIdTable() {
 	val mainHand = enumeration("main_hand", ProxiedPlayer.MainHand::class)
 	val language = text("language")
 	val viewDistance = integer("view_distance")
+	val version = text("version")
 
 	val hasCape = bool("has_cape")
 	val hasHat = bool("has_hat")

@@ -34,9 +34,9 @@ class DreamNetworkBans : Plugin() {
 		}
 
 		transaction(Databases.databaseNetwork) {
-			SchemaUtils.create(
+			SchemaUtils.createMissingTablesAndColumns(
 					Bans,
-					// IpBans,
+					IpBans,
 					Warns,
 					Fingerprints
 			)

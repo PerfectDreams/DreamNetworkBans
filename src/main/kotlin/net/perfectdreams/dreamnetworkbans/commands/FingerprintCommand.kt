@@ -56,6 +56,7 @@ class FingerprintCommand(val m: DreamNetworkBans) : AbstractCommand("fingerprint
 				sender.sendMessage("§eMão Principal: ${fingerprint.mainHand}".toTextComponent())
 				sender.sendMessage("§eLinguagem: ${fingerprint.language}".toTextComponent())
 				sender.sendMessage("§eView Distance: ${fingerprint.viewDistance}".toTextComponent())
+				sender.sendMessage("§eVersão: ${fingerprint.version}".toTextComponent())
 				sender.sendMessage("§eCapa Ativada? ${fingerprint.hasCape.prettyBoolean()}".toTextComponent())
 				sender.sendMessage("§eChapéu Ativado? ${fingerprint.hasHat.prettyBoolean()}".toTextComponent())
 				sender.sendMessage("§eJaqueta Ativada? ${fingerprint.hasJacket.prettyBoolean()}".toTextComponent())

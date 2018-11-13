@@ -16,6 +16,7 @@ class Fingerprint(id: EntityID<Long>) : LongEntity(id) {
 	var mainHand by Fingerprints.mainHand
 	var language by Fingerprints.language
 	var viewDistance by Fingerprints.viewDistance
+	var version by Fingerprints.version
 
 	var hasCape by Fingerprints.hasCape
 	var hasHat by Fingerprints.hasHat

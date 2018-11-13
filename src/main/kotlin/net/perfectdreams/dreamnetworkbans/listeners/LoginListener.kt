@@ -12,6 +12,7 @@ import net.perfectdreams.dreamnetworkbans.dao.Ban
 import net.perfectdreams.dreamnetworkbans.dao.Fingerprint
 import net.perfectdreams.dreamnetworkbans.tables.Bans
 import org.jetbrains.exposed.sql.transactions.transaction
+import protocolsupport.api.ProtocolSupportAPI
 import java.util.regex.Pattern
 
 class LoginListener(val m: DreamNetworkBans) : Listener {
@@ -90,6 +91,8 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 				this.mainHand = event.player.mainHand
 				this.language = event.player.locale.language
 				this.viewDistance = event.player.viewDistance.toInt()
+				this.version = ProtocolSupportAPI.getProtocolVersion(event.player).name
+				
 				this.hasCape = event.player.skinParts.hasCape()
 				this.hasHat = event.player.skinParts.hasHat()
 				this.hasJacket = event.player.skinParts.hasJacket()

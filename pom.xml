@@ -65,6 +65,11 @@
             <version>1.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.PerfectDreams</groupId>
+            <artifactId>ProtocolSupportBungee</artifactId>
+            <version>fix~jitpack-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
