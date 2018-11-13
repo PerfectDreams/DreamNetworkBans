@@ -59,8 +59,15 @@ class WarnCommand(val m: DreamNetworkBans) : AbstractCommand("warn", permission 
 			return
 		}
 
-		val effectiveReason = reason ?: "Sem motivo definido"
+		var effectiveReason = reason ?: "Sem motivo definido"
 
+		var silent = false
+		if (effectiveReason.endsWith("-s")) {
+			effectiveReason = effectiveReason.substring(0, effectiveReason.length - "-s".length)
+			
+			silent = true
+		}
+		
 		val punisherDisplayName = if (sender is ProxiedPlayer) {
 			sender.name
 		} else { "Pantufa" }
@@ -75,10 +82,17 @@ class WarnCommand(val m: DreamNetworkBans) : AbstractCommand("warn", permission 
 		}
 
 		sender.sendMessage("§b${punishedDisplayName}§a foi punido com sucesso, yay!! ^-^".toTextComponent())
-		m.proxy.broadcast("§b${punisherDisplayName}§a deu um aviso em §c${punishedDisplayName}§a por §6\"§e${effectiveReason}§6\"§a!".toTextComponent())
-		DreamNetwork.PANTUFA.sendMessage(
-				"378318041542426634",
-				"**$playerName** foi avisado!\nFazer o que né, não soube ler as regras!\n\n**Avisado pelo:** ${punisherDisplayName}\n**Motivo:** $reason\n**Servidor:** ${player?.server?.info?.name ?: "Desconhecido"}"
-		)
+		if (silent) {
+			DreamNetwork.PANTUFA.sendMessage(
+					"506859824034611212",
+					"**$playerName** foi avisado!\nFazer o que né, não soube ler as regras!\n\n**Avisado pelo:** ${punisherDisplayName}\n**Motivo:** $reason\n**Servidor:** ${player?.server?.info?.name ?: "Desconhecido"}"
+			)
+		} else {
+			m.proxy.broadcast("§b${punisherDisplayName}§a deu um aviso em §c${punishedDisplayName}§a por §6\"§e${effectiveReason}§6\"§a!".toTextComponent())
+			DreamNetwork.PANTUFA.sendMessage(
+					"378318041542426634",
+					"**$playerName** foi avisado!\nFazer o que né, não soube ler as regras!\n\n**Avisado pelo:** ${punisherDisplayName}\n**Motivo:** $reason\n**Servidor:** ${player?.server?.info?.name ?: "Desconhecido"}"
+			)
+		}
 	}
 }
