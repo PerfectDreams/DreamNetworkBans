@@ -54,5 +54,6 @@ class DreamNetworkBans : Plugin() {
 		CheckBanCommand(this).register(this)
 		FingerprintCommand(this).register(this)
 		IPReportCommand(this).register(this)
+		UnwarnCommand().register(this)
 	}
 }
