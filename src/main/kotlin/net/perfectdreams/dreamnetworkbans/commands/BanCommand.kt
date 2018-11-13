@@ -12,7 +12,9 @@ import net.perfectdreams.dreamcorebungee.utils.extensions.toTextComponent
 import net.perfectdreams.dreamnetworkbans.DreamNetworkBans
 import net.perfectdreams.dreamnetworkbans.PunishmentManager
 import net.perfectdreams.dreamnetworkbans.dao.Ban
+import net.perfectdreams.dreamnetworkbans.dao.GeoLocalization
 import net.perfectdreams.dreamnetworkbans.dao.IpBan
+import net.perfectdreams.dreamnetworkbans.tables.GeoLocalizations
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
@@ -92,10 +94,19 @@ class BanCommand(val m: DreamNetworkBans) : AbstractCommand("ban", permission = 
 			}
 		}
 		
-		if (player != null) {
+		val geoLocalization = transaction(Databases.databaseNetwork) {
+			GeoLocalization.find { GeoLocalizations.player eq punishedUniqueId!! }.firstOrNull()
+		}
+		
+		val ip = if (player != null)
+			player.address.hostString
+		else
+			geoLocalization?.ip
+		
+		if (ip != null) {
 			transaction(Databases.databaseNetwork) {
 				IpBan.new {
-					this.ip = player.address.hostString
+					this.ip = ip
 					this.punisherName = punisherDisplayName
 					this.punishedBy = punishedUniqueId
 					this.punishedAt = System.currentTimeMillis()
