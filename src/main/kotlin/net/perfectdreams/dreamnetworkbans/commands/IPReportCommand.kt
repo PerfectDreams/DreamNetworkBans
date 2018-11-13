@@ -21,7 +21,7 @@ class IPReportCommand(val m: DreamNetworkBans) : AbstractCommand("ipreport", per
 				GeoLocalization.find { GeoLocalizations.player eq player.uniqueId }.firstOrNull()
 			}
 			
-			message += "§c${player.name} => ${player.address.hostString} - (${geoLocalization?.country ?: "???"}, ${geoLocalization?.region ?: "???"})"
+			message += "§c${player.name} => ${player.address.hostString} - (${geoLocalization?.country ?: "???"}, ${geoLocalization?.region ?: "???"})\n"
 		}
 		
 		sender.sendMessage("§cResumo dos players que estão online (${m.proxy.players.size}):".toTextComponent())
