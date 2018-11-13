@@ -20,7 +20,7 @@ class IPReportCommand(val m: DreamNetworkBans) : AbstractCommand("ipreport", per
 				GeoLocalization.find { GeoLocalizations.player eq it.uniqueId }.firstOrNull()
 			}
 			
-			"§c${it.name} (${it.address.hostString} - ${geoLocalization?.country ?: "???"}, ${geoLocalization?.region ?: "???"})"
+			"§b${it.name} §7(§a${it.address.hostString} §7- §a${geoLocalization?.country ?: "???"}, ${geoLocalization?.region ?: "???"}§7)"
 		}.toTextComponent())
 		
 	}
