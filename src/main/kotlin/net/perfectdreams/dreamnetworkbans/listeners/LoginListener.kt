@@ -82,7 +82,7 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 				§cMotivo:
 
 				§a${ban.reason}
-				§cPor: ${ban.punishedBy}
+				§cPor: ${ban.punisherName}
 			""".trimIndent().toTextComponent())
 				event.completeIntent(m)
 				return@runAsync
