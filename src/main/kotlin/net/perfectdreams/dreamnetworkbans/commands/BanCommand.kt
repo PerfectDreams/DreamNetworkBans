@@ -91,6 +91,20 @@ class BanCommand(val m: DreamNetworkBans) : AbstractCommand("ban", permission = 
 				this.temporary = false
 			}
 		}
+		
+		if (player != null) {
+			transaction(Databases.databaseNetwork) {
+				IpBan.new {
+					this.ip = player.address.hostString
+					this.punisherName = punisherDisplayName
+					this.punishedBy = punishedUniqueId
+					this.punishedAt = System.currentTimeMillis()
+					this.reason = effectiveReason
+					this.temporary = true
+					this.expiresAt = System.currentTimeMillis() + PunishmentManager.DEFAULT_IPBAN_EXPIRATION
+				}
+			}
+		}
 
 		// Vamos expulsar o player ao ser banido
 		player?.disconnect("""

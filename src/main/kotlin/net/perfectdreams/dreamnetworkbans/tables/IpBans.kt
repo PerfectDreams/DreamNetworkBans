@@ -12,6 +12,7 @@ object IpBans : LongIdTable() {
 	// Sim, pode ser nulo, caso seja nulo, iremos colocar quem puniu como "Pantufa"
 	val punishedBy = uuid("punished_by").nullable()
 	val punishedAt = Bans.long("punished_at")
+	val punisherName = text("punisher_name")
 	// Motivo da punição
 	val reason = text("reason").nullable()
 	val temporary = Bans.bool("temporary")

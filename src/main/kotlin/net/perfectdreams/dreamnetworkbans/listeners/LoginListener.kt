@@ -11,8 +11,10 @@ import net.perfectdreams.dreamnetworkbans.DreamNetworkBans
 import net.perfectdreams.dreamnetworkbans.dao.Ban
 import net.perfectdreams.dreamnetworkbans.dao.Fingerprint
 import net.perfectdreams.dreamnetworkbans.dao.GeoLocalization
+import net.perfectdreams.dreamnetworkbans.dao.IpBan
 import net.perfectdreams.dreamnetworkbans.tables.Bans
 import net.perfectdreams.dreamnetworkbans.tables.GeoLocalizations
+import net.perfectdreams.dreamnetworkbans.tables.IpBans
 import net.perfectdreams.dreamnetworkbans.utils.GeoUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import protocolsupport.api.ProtocolSupportAPI
@@ -76,14 +78,51 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 			}
 
 			if (ban != null) {
+				if (ban.temporary && ban.expiresAt!! < System.currentTimeMillis()) {
+					transaction(Databases.databaseNetwork) {
+						ban.delete()
+					}
+					
+					event.completeIntent(m)
+					return@runAsync
+				}
+				
 				event.isCancelled = true
 				event.setCancelReason("""
-				§cVocê foi banido!
-				§cMotivo:
-
-				§a${ban.reason}
-				§cPor: ${ban.punisherName}
-			""".trimIndent().toTextComponent())
+					§cVocê foi banido!
+					§cMotivo:
+					
+					§a${ban.reason}
+					§cPor: ${ban.punisherName}
+				""".trimIndent().toTextComponent())
+				
+				event.completeIntent(m)
+				return@runAsync
+			}
+			
+			val ipBan = transaction(Databases.databaseNetwork) {
+				IpBan.find { IpBans.ip eq event.connection.address.hostString }.firstOrNull()
+			}
+			
+			if (ipBan != null) {
+				if (ipBan.temporary && ipBan.expiresAt!! < System.currentTimeMillis()) {
+					transaction(Databases.databaseNetwork) {
+						ipBan.delete()
+					}
+					
+					event.completeIntent(m)
+					return@runAsync
+				}
+				
+				event.isCancelled = true
+				event.setCancelReason("""
+					§cVocê foi banido!
+					§cMotivo:
+					
+					§a${ipBan.reason}
+					§cPor: ${ipBan.punisherName}
+				""".trimIndent().toTextComponent())
+				
 				event.completeIntent(m)
 				return@runAsync
 			}
