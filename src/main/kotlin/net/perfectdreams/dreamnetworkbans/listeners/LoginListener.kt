@@ -66,7 +66,7 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 						this.ip = event.connection.address.hostString
 						
 						this.country = loc.country
-						this.region = loc.region
+						this.region = loc.regionName
 					}
 				}
 			}
