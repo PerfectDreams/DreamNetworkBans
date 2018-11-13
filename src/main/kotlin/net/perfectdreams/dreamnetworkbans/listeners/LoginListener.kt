@@ -10,7 +10,10 @@ import net.perfectdreams.dreamcorebungee.utils.extensions.toTextComponent
 import net.perfectdreams.dreamnetworkbans.DreamNetworkBans
 import net.perfectdreams.dreamnetworkbans.dao.Ban
 import net.perfectdreams.dreamnetworkbans.dao.Fingerprint
+import net.perfectdreams.dreamnetworkbans.dao.GeoLocalization
 import net.perfectdreams.dreamnetworkbans.tables.Bans
+import net.perfectdreams.dreamnetworkbans.tables.GeoLocalizations
+import net.perfectdreams.dreamnetworkbans.utils.GeoUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import protocolsupport.api.ProtocolSupportAPI
 import java.util.regex.Pattern
@@ -50,6 +53,24 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 		event.registerIntent(m)
 		
 		m.proxy.scheduler.runAsync(m) {
+			val geoLocalization = transaction(Databases.databaseNetwork) {
+				GeoLocalization.find { GeoLocalizations.player eq event.connection.uniqueId }.firstOrNull()
+			}
+			
+			if (geoLocalization == null) {
+				val loc = GeoUtils.getGeolocalization(event.connection.address.hostString)
+				
+				transaction(Databases.databaseNetwork) {
+					GeoLocalization.new {
+						this.player = event.connection.uniqueId
+						this.ip = event.connection.address.hostString
+						
+						this.country = loc.country
+						this.region = loc.region
+					}
+				}
+			}
+			
 			val ban = transaction(Databases.databaseNetwork) {
 				Ban.find { Bans.player eq event.connection.uniqueId }.firstOrNull()
 			}

@@ -6,6 +6,7 @@ import net.perfectdreams.dreamnetworkbans.commands.*
 import net.perfectdreams.dreamnetworkbans.listeners.LoginListener
 import net.perfectdreams.dreamnetworkbans.tables.Bans
 import net.perfectdreams.dreamnetworkbans.tables.Fingerprints
+import net.perfectdreams.dreamnetworkbans.tables.GeoLocalizations
 import net.perfectdreams.dreamnetworkbans.tables.IpBans
 import net.perfectdreams.dreamnetworkbans.tables.Warns
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -38,7 +39,8 @@ class DreamNetworkBans : Plugin() {
 					Bans,
 					IpBans,
 					Warns,
-					Fingerprints
+					Fingerprints,
+					GeoLocalizations
 			)
 		}
 	}
