@@ -3,13 +3,11 @@ package net.perfectdreams.dreamnetworkbans
 import net.md_5.bungee.api.plugin.Plugin
 import net.perfectdreams.dreamcorebungee.utils.Databases
 import net.perfectdreams.dreamnetworkbans.commands.*
-import net.perfectdreams.dreamnetworkbans.listeners.ChatListener
 import net.perfectdreams.dreamnetworkbans.listeners.LoginListener
 import net.perfectdreams.dreamnetworkbans.tables.Bans
 import net.perfectdreams.dreamnetworkbans.tables.Fingerprints
 import net.perfectdreams.dreamnetworkbans.tables.GeoLocalizations
 import net.perfectdreams.dreamnetworkbans.tables.IpBans
-import net.perfectdreams.dreamnetworkbans.tables.Mutes
 import net.perfectdreams.dreamnetworkbans.tables.Warns
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -29,8 +27,7 @@ class DreamNetworkBans : Plugin() {
 		registerCommands()
 
 		this.proxy.pluginManager.registerListener(this, LoginListener(this))
-		this.proxy.pluginManager.registerListener(this, ChatListener())
-		
+
 		val youtubersFile = File("youtubers.json")
 		if (!youtubersFile.exists()) {
 			youtubersFile.createNewFile()
@@ -43,8 +40,7 @@ class DreamNetworkBans : Plugin() {
 					IpBans,
 					Warns,
 					Fingerprints,
-					GeoLocalizations,
-					Mutes
+					GeoLocalizations
 			)
 		}
 	}
@@ -59,7 +55,5 @@ class DreamNetworkBans : Plugin() {
 		FingerprintCommand(this).register(this)
 		IPReportCommand(this).register(this)
 		UnwarnCommand().register(this)
-		MuteCommand(this).register(this)
-		UnmuteCommand().register(this)
 	}
 }
