@@ -23,7 +23,7 @@ class UnwarnCommand : AbstractCommand("unwarn", permission = "dreamnetworkbans.u
 		val punishedUniqueId = try { UUID.fromString(playerName) } catch (e: IllegalArgumentException) { PunishmentManager.getUniqueId(playerName) }
 		
 		val warn = transaction(Databases.databaseNetwork) {
-			Warn.find { Warns.player eq punishedUniqueId }.firstOrNull()
+			Warn.find { Warns.player eq punishedUniqueId }.lastOrNull()
 		}
 		
 		if (warn == null) {
