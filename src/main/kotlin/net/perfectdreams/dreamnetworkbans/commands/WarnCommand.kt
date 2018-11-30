@@ -85,9 +85,9 @@ class WarnCommand(val m: DreamNetworkBans) : AbstractCommand("warn", permission 
 		}
 		
 		val warns = transaction(Databases.databaseNetwork) {
-			Warn.find { Warns.player eq punishedUniqueId!! }
+			Warn.find { Warns.player eq punishedUniqueId!! }.toList()
 		}
-		val count = warns.count()
+		val count = warns.size
 		
 		val geoLocalization = transaction(Databases.databaseNetwork) {
 			GeoLocalization.find { GeoLocalizations.player eq punishedUniqueId!! }.firstOrNull()
