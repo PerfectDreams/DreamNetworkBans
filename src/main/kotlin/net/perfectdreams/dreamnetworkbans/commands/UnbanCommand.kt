@@ -7,6 +7,7 @@ import net.perfectdreams.dreamcorebungee.utils.commands.annotation.Subcommand
 import net.perfectdreams.dreamcorebungee.utils.extensions.toTextComponent
 import net.perfectdreams.dreamnetworkbans.DreamNetworkBans
 import net.perfectdreams.dreamnetworkbans.PunishmentManager
+import net.perfectdreams.dreamnetworkbans.dao.Ban
 import net.perfectdreams.dreamnetworkbans.tables.Bans
 import net.perfectdreams.libs.com.mongodb.client.model.Filters
 import org.jetbrains.exposed.sql.deleteWhere
@@ -20,7 +21,7 @@ class UnbanCommand(val m: DreamNetworkBans) : AbstractCommand("unban", permissio
 		val punishedUniqueId = try { UUID.fromString(playerName) } catch (e: IllegalArgumentException) { PunishmentManager.getUniqueId(playerName) }
 
 		transaction(Databases.databaseNetwork) {
-			Bans.deleteWhere { Bans.player eq punishedUniqueId }
+			Ban.find { Bans.player eq punishedUniqueId }.firstOrNull()?.delete()
 		}
 
 		sender.sendMessage("§b$punishedUniqueId§a desbanido com sucesso!".toTextComponent())
