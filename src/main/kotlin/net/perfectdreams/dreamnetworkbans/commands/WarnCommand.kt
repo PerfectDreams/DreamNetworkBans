@@ -105,6 +105,12 @@ class WarnCommand(val m: DreamNetworkBans) : AbstractCommand("warn", permission 
 				
 				if (player != null) {
 					player.disconnect("§cVocê está chegando ao limite de avisos, cuidado!\n§cTotal de avisos: §e$count".toTextComponent())
+					
+					m.proxy.broadcast("§c§l${sender.name}§c expulsou §l$playerName§c pelo motivo \"$reason\" no servidor ${(sender as? ProxiedPlayer)?.server?.info?.name ?: "Desconhecido"}".toTextComponent())
+					DreamNetwork.PANTUFA.sendMessage(
+							"378318041542426634",
+							"**$playerName** foi expulso!\nFazer o que né, não soube ler as regras!\n\n**Expulso pelo:** ${sender.name}\n**Motivo:** $reason\n**Servidor:** ${(sender as? ProxiedPlayer)?.server?.info?.name ?: "Desconhecido"}"
+					)
 				}
 			}
 			
@@ -113,6 +119,12 @@ class WarnCommand(val m: DreamNetworkBans) : AbstractCommand("warn", permission 
 				
 				if (player != null) {
 					player.disconnect("§cVocê está chegando ao limite de avisos, cuidado!\n§cTotal de avisos: §e$count".toTextComponent())
+					
+					m.proxy.broadcast("§c§l${sender.name}§c expulsou §l$playerName§c pelo motivo \"$reason\" no servidor ${(sender as? ProxiedPlayer)?.server?.info?.name ?: "Desconhecido"}".toTextComponent())
+					DreamNetwork.PANTUFA.sendMessage(
+							"378318041542426634",
+							"**$playerName** foi expulso!\nFazer o que né, não soube ler as regras!\n\n**Expulso pelo:** ${sender.name}\n**Motivo:** $reason\n**Servidor:** ${(sender as? ProxiedPlayer)?.server?.info?.name ?: "Desconhecido"}"
+					)
 				}
 			}
 			
@@ -154,6 +166,12 @@ class WarnCommand(val m: DreamNetworkBans) : AbstractCommand("warn", permission 
 					§cPor: $punisherDisplayName
 					§cExpira em: §a4 horas
 				""".trimIndent().toTextComponent())
+				
+				m.proxy.broadcast("§c§l${punisherDisplayName}§c baniu temporariamente §l$playerName§c por \"$reason\" no servidor ${player?.server?.info?.name ?: "Desconhecido"} por 4 horas".toTextComponent())
+				DreamNetwork.PANTUFA.sendMessage(
+						"378318041542426634",
+						"**$playerName** foi banido temporariamente!\nFazer o que né, não soube ler as regras!\n\n**Banido pelo:** ${punisherDisplayName}\n**Motivo:** $reason\n**Servidor:** ${player?.server?.info?.name ?: "Desconhecido"}\nDuração: 4 horas"
+				)
 			}
 			
 			5 -> {
@@ -194,6 +212,13 @@ class WarnCommand(val m: DreamNetworkBans) : AbstractCommand("warn", permission 
 					§cPor: $punisherDisplayName
 					§cExpira em: §a12 horas
 				""".trimIndent().toTextComponent())
+				
+				
+				m.proxy.broadcast("§c§l${punisherDisplayName}§c baniu temporariamente §l$playerName§c por \"$reason\" no servidor ${player?.server?.info?.name ?: "Desconhecido"} por 12 horas".toTextComponent())
+				DreamNetwork.PANTUFA.sendMessage(
+						"378318041542426634",
+						"**$playerName** foi banido temporariamente!\nFazer o que né, não soube ler as regras!\n\n**Banido pelo:** ${punisherDisplayName}\n**Motivo:** $reason\n**Servidor:** ${player?.server?.info?.name ?: "Desconhecido"}\nDuração: 12 horas"
+				)
 			}
 			
 			6 -> {
@@ -234,6 +259,12 @@ class WarnCommand(val m: DreamNetworkBans) : AbstractCommand("warn", permission 
 					§cPor: $punisherDisplayName
 					§cExpira em: §a1 dia
 				""".trimIndent().toTextComponent())
+				
+				m.proxy.broadcast("§c§l${punisherDisplayName}§c baniu temporariamente §l$playerName§c por \"$reason\" no servidor ${player?.server?.info?.name ?: "Desconhecido"} por 1 dia".toTextComponent())
+				DreamNetwork.PANTUFA.sendMessage(
+						"378318041542426634",
+						"**$playerName** foi banido temporariamente!\nFazer o que né, não soube ler as regras!\n\n**Banido pelo:** ${punisherDisplayName}\n**Motivo:** $reason\n**Servidor:** ${player?.server?.info?.name ?: "Desconhecido"}\nDuração: 1 dia"
+				)
 			}
 			
 			7 -> {
@@ -273,6 +304,12 @@ class WarnCommand(val m: DreamNetworkBans) : AbstractCommand("warn", permission 
 					§cPor: $punisherDisplayName
 					§cExpira em: §a3 dias
 				""".trimIndent().toTextComponent())
+				
+				m.proxy.broadcast("§c§l${punisherDisplayName}§c baniu temporariamente §l$playerName§c por \"$reason\" no servidor ${player?.server?.info?.name ?: "Desconhecido"} por 4 horas".toTextComponent())
+				DreamNetwork.PANTUFA.sendMessage(
+						"378318041542426634",
+						"**$playerName** foi banido temporariamente!\nFazer o que né, não soube ler as regras!\n\n**Banido pelo:** ${punisherDisplayName}\n**Motivo:** $reason\n**Servidor:** ${player?.server?.info?.name ?: "Desconhecido"}\nDuração: 3 dias"
+				)
 			}
 			
 			8 -> {
@@ -309,6 +346,12 @@ class WarnCommand(val m: DreamNetworkBans) : AbstractCommand("warn", permission 
 					§a$effectiveReason
 					§cPor: $punisherDisplayName
 				""".trimIndent().toTextComponent())
+				
+				m.proxy.broadcast("§c§l${punisherDisplayName}§c baniu §l$playerName§c por \"$reason\" no servidor ${player?.server?.info?.name ?: "Desconhecido"}".toTextComponent())
+				DreamNetwork.PANTUFA.sendMessage(
+						"378318041542426634",
+						"**$playerName** foi banido permanentemente!\nFazer o que né, não soube ler as regras!\n\n**Banido pelo:** ${punisherDisplayName}\n**Motivo:** $reason\n**Servidor:** ${player?.server?.info?.name ?: "Desconhecido"}"
+				)
 			}
 		}
 
