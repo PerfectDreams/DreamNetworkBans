@@ -12,8 +12,11 @@ import net.perfectdreams.dreamcorebungee.utils.extensions.toTextComponent
 import net.perfectdreams.dreamnetworkbans.DreamNetworkBans
 import net.perfectdreams.dreamnetworkbans.PunishmentManager
 import net.perfectdreams.dreamnetworkbans.dao.Ban
+import net.perfectdreams.dreamnetworkbans.dao.GeoLocalization
 import net.perfectdreams.dreamnetworkbans.dao.IpBan
 import net.perfectdreams.dreamnetworkbans.dao.Warn
+import net.perfectdreams.dreamnetworkbans.tables.GeoLocalizations
+import net.perfectdreams.dreamnetworkbans.tables.Warns
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
@@ -78,6 +81,234 @@ class WarnCommand(val m: DreamNetworkBans) : AbstractCommand("warn", permission 
 				this.punishedBy = punishedUniqueId
 				this.punishedAt = System.currentTimeMillis()
 				this.reason = effectiveReason
+			}
+		}
+		
+		val warns = transaction(Databases.databaseNetwork) {
+			Warn.find { Warns.player eq punishedUniqueId!! }
+		}
+		val count = warns.count()
+		
+		val geoLocalization = transaction(Databases.databaseNetwork) {
+			GeoLocalization.find { GeoLocalizations.player eq punishedUniqueId!! }.firstOrNull()
+		}
+		
+		// IP do usuário, caso seja encontrado
+		val ip = if (player != null)
+			player.address.hostString
+		else
+			geoLocalization?.ip
+		
+		when (count) {
+			2 -> {
+				val player = m.proxy.getPlayer(punishedUniqueId!!)
+				
+				if (player != null) {
+					player.disconnect("§cVocê está chegando ao limite de avisos, cuidado!\n§cTotal de avisos: §e$count".toTextComponent())
+				}
+			}
+			
+			3 -> {
+				val player = m.proxy.getPlayer(punishedUniqueId!!)
+				
+				if (player != null) {
+					player.disconnect("§cVocê está chegando ao limite de avisos, cuidado!\n§cTotal de avisos: §e$count".toTextComponent())
+				}
+			}
+			
+			4 -> {
+				// Ban de 4 horas
+				
+				val expires = System.currentTimeMillis() + 14400000 // 4 horas
+				transaction(Databases.databaseNetwork) {
+					Ban.new {
+						this.player = punishedUniqueId!!
+						this.punisherName = punisherDisplayName
+						this.punishedBy = punishedUniqueId
+						this.punishedAt = System.currentTimeMillis()
+						this.reason = effectiveReason
+						
+						this.temporary = true
+						this.expiresAt = expires
+					}
+					
+					if (ip != null) {
+						IpBan.new {
+							this.ip = ip
+							this.punisherName = punisherDisplayName
+							this.punishedBy = punishedUniqueId
+							this.punishedAt = System.currentTimeMillis()
+							this.reason = effectiveReason
+							this.temporary = true
+							this.expiresAt = expires
+						}
+					}
+				}
+				
+				// TODO: Hard coded, remover depois
+				player?.disconnect("""
+					§cVocê foi temporariamente banido!
+					§cMotivo:
+					
+					§a$effectiveReason
+					§cPor: $punisherDisplayName
+					§cExpira em: §a4 horas
+				""".trimIndent().toTextComponent())
+			}
+			
+			5 -> {
+				// Ban de 12 horas
+				
+				val expires = System.currentTimeMillis() + 43200000 // 12 horas
+				transaction(Databases.databaseNetwork) {
+					Ban.new {
+						this.player = punishedUniqueId!!
+						this.punisherName = punisherDisplayName
+						this.punishedBy = punishedUniqueId
+						this.punishedAt = System.currentTimeMillis()
+						this.reason = effectiveReason
+						
+						this.temporary = true
+						this.expiresAt = expires
+					}
+					
+					if (ip != null) {
+						IpBan.new {
+							this.ip = ip
+							this.punisherName = punisherDisplayName
+							this.punishedBy = punishedUniqueId
+							this.punishedAt = System.currentTimeMillis()
+							this.reason = effectiveReason
+							this.temporary = true
+							this.expiresAt = expires
+						}
+					}
+				}
+				
+				// TODO: Hard coded, remover depois
+				player?.disconnect("""
+					§cVocê foi temporariamente banido!
+					§cMotivo:
+					
+					§a$effectiveReason
+					§cPor: $punisherDisplayName
+					§cExpira em: §a12 horas
+				""".trimIndent().toTextComponent())
+			}
+			
+			6 -> {
+				// Ban de 1 dia
+				
+				val expires = System.currentTimeMillis() + 86400000 // 24 horas
+				transaction(Databases.databaseNetwork) {
+					Ban.new {
+						this.player = punishedUniqueId!!
+						this.punisherName = punisherDisplayName
+						this.punishedBy = punishedUniqueId
+						this.punishedAt = System.currentTimeMillis()
+						this.reason = effectiveReason
+						
+						this.temporary = true
+						this.expiresAt = expires
+					}
+					
+					if (ip != null) {
+						IpBan.new {
+							this.ip = ip
+							this.punisherName = punisherDisplayName
+							this.punishedBy = punishedUniqueId
+							this.punishedAt = System.currentTimeMillis()
+							this.reason = effectiveReason
+							this.temporary = true
+							this.expiresAt = expires
+						}
+					}
+				}
+				
+				// TODO: Hard coded, remover depois
+				player?.disconnect("""
+					§cVocê foi temporariamente banido!
+					§cMotivo:
+					
+					§a$effectiveReason
+					§cPor: $punisherDisplayName
+					§cExpira em: §a1 dia
+				""".trimIndent().toTextComponent())
+			}
+			
+			7 -> {
+				// Ban de 3 dias
+				val expires = System.currentTimeMillis() + 259200000 // 72 horas
+				transaction(Databases.databaseNetwork) {
+					Ban.new {
+						this.player = punishedUniqueId!!
+						this.punisherName = punisherDisplayName
+						this.punishedBy = punishedUniqueId
+						this.punishedAt = System.currentTimeMillis()
+						this.reason = effectiveReason
+						
+						this.temporary = true
+						this.expiresAt = expires
+					}
+					
+					if (ip != null) {
+						IpBan.new {
+							this.ip = ip
+							this.punisherName = punisherDisplayName
+							this.punishedBy = punishedUniqueId
+							this.punishedAt = System.currentTimeMillis()
+							this.reason = effectiveReason
+							this.temporary = true
+							this.expiresAt = expires
+						}
+					}
+				}
+				
+				// TODO: Hard coded, remover depois
+				player?.disconnect("""
+					§cVocê foi temporariamente banido!
+					§cMotivo:
+					
+					§a$effectiveReason
+					§cPor: $punisherDisplayName
+					§cExpira em: §a3 dias
+				""".trimIndent().toTextComponent())
+			}
+			
+			8 -> {
+				// Ban permanente
+				
+				transaction(Databases.databaseNetwork) {
+					Ban.new {
+						this.player = punishedUniqueId!!
+						this.punisherName = punisherDisplayName
+						this.punishedBy = punishedUniqueId
+						this.punishedAt = System.currentTimeMillis()
+						this.reason = effectiveReason
+						
+						this.temporary = false
+					}
+					
+					if (ip != null) {
+						IpBan.new {
+							this.ip = ip
+							this.punisherName = punisherDisplayName
+							this.punishedBy = punishedUniqueId
+							this.punishedAt = System.currentTimeMillis()
+							this.reason = effectiveReason
+							this.temporary = true
+							this.expiresAt = PunishmentManager.DEFAULT_IPBAN_EXPIRATION
+						}
+					}
+				}
+				
+				player?.disconnect("""
+					§cVocê foi banido!
+					§cMotivo:
+					
+					§a$effectiveReason
+					§cPor: $punisherDisplayName
+				""".trimIndent().toTextComponent())
 			}
 		}
 

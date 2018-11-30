@@ -7,7 +7,7 @@ object PunishmentManager {
 	const val WARN_EXPIRATION = 1_209_600_000
 	
 	// 7 dias
-	const val DEFAULT_IPBAN_EXPIRATION = WARN_EXPIRATION / 2
+	const val DEFAULT_IPBAN_EXPIRATION = (WARN_EXPIRATION / 2).toLong()
 	
 	fun getUniqueId(playerName: String): UUID {
 		// UUIDs podem ser diferentes... mas já que a gente é um offline mode boi, complicar pra quê?
