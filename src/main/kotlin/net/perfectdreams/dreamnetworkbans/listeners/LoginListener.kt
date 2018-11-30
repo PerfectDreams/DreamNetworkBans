@@ -15,6 +15,7 @@ import net.perfectdreams.dreamnetworkbans.dao.IpBan
 import net.perfectdreams.dreamnetworkbans.tables.Bans
 import net.perfectdreams.dreamnetworkbans.tables.GeoLocalizations
 import net.perfectdreams.dreamnetworkbans.tables.IpBans
+import net.perfectdreams.dreamnetworkbans.utils.DateUtils
 import net.perfectdreams.dreamnetworkbans.utils.GeoUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import protocolsupport.api.ProtocolSupportAPI
@@ -89,11 +90,12 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 				
 				event.isCancelled = true
 				event.setCancelReason("""
-					§cVocê foi banido!
+					§cVocê foi ${if (ban.temporary) "temporariamente " else ""}banido!
 					§cMotivo:
 					
 					§a${ban.reason}
 					§cPor: ${ban.punisherName}
+					${if (ban.temporary) "§c Expira em: §e${DateUtils.formatDateDiff(ban.expiresAt!!)}" else ""}
 				""".trimIndent().toTextComponent())
 				
 				event.completeIntent(m)
@@ -116,11 +118,12 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 				
 				event.isCancelled = true
 				event.setCancelReason("""
-					§cVocê foi banido!
+					§cVocê foi ${if (ipBan.temporary) "temporariamente " else ""}banido!
 					§cMotivo:
 					
 					§a${ipBan.reason}
 					§cPor: ${ipBan.punisherName}
+					${if (ipBan.temporary) "§c Expira em: §e${DateUtils.formatDateDiff(ipBan.expiresAt!!)}" else ""}
 				""".trimIndent().toTextComponent())
 				
 				event.completeIntent(m)
