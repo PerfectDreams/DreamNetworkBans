@@ -1,31 +1,21 @@
 package net.perfectdreams.dreamnetworkbans.commands
 
 import net.md_5.bungee.api.CommandSender
-import net.md_5.bungee.api.chat.BaseComponent
-import net.md_5.bungee.api.connection.ProxiedPlayer
-import net.perfectdreams.dreamcorebungee.tables.Users.username
+import net.perfectdreams.commands.annotation.Subcommand
+import net.perfectdreams.dreamcorebungee.commands.SparklyBungeeCommand
 import net.perfectdreams.dreamcorebungee.utils.Databases
-import net.perfectdreams.dreamcorebungee.utils.commands.AbstractCommand
-import net.perfectdreams.dreamcorebungee.utils.commands.annotation.ArgumentType
-import net.perfectdreams.dreamcorebungee.utils.commands.annotation.InjectArgument
-import net.perfectdreams.dreamcorebungee.utils.commands.annotation.Subcommand
 import net.perfectdreams.dreamcorebungee.utils.extensions.toTextComponent
 import net.perfectdreams.dreamnetworkbans.DreamNetworkBans
 import net.perfectdreams.dreamnetworkbans.PunishmentManager
-import net.perfectdreams.dreamnetworkbans.dao.Ban
 import net.perfectdreams.dreamnetworkbans.dao.Fingerprint
-import net.perfectdreams.dreamnetworkbans.dao.IpBan
-import net.perfectdreams.dreamnetworkbans.dao.Warn
-import net.perfectdreams.dreamnetworkbans.tables.Bans
 import net.perfectdreams.dreamnetworkbans.tables.Fingerprints
-import net.perfectdreams.dreamnetworkbans.tables.Warns
 import net.perfectdreams.dreamnetworkbans.utils.prettyBoolean
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.lang.IllegalArgumentException
 import java.util.*
 
-class FingerprintCommand(val m: DreamNetworkBans) : AbstractCommand("fingerprint", permission = "dreamnetworkbans.fingerprint") {
+class FingerprintCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("fingerprint"), permission = "dreamnetworkbans.fingerprint") {
+
 	@Subcommand
 	fun checkBan(sender: CommandSender, playerName: String) {
 		val punishedUniqueId = try { UUID.fromString(playerName) } catch (e: IllegalArgumentException) { PunishmentManager.getUniqueId(playerName) }

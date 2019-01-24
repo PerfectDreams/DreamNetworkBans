@@ -2,12 +2,12 @@ package net.perfectdreams.dreamnetworkbans.commands
 
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.connection.ProxiedPlayer
+import net.perfectdreams.commands.ArgumentType
+import net.perfectdreams.commands.annotation.InjectArgument
+import net.perfectdreams.commands.annotation.Subcommand
+import net.perfectdreams.dreamcorebungee.commands.SparklyBungeeCommand
 import net.perfectdreams.dreamcorebungee.network.DreamNetwork
 import net.perfectdreams.dreamcorebungee.utils.Databases
-import net.perfectdreams.dreamcorebungee.utils.commands.AbstractCommand
-import net.perfectdreams.dreamcorebungee.utils.commands.annotation.ArgumentType
-import net.perfectdreams.dreamcorebungee.utils.commands.annotation.InjectArgument
-import net.perfectdreams.dreamcorebungee.utils.commands.annotation.Subcommand
 import net.perfectdreams.dreamcorebungee.utils.extensions.toTextComponent
 import net.perfectdreams.dreamnetworkbans.DreamNetworkBans
 import net.perfectdreams.dreamnetworkbans.PunishmentManager
@@ -18,19 +18,20 @@ import net.perfectdreams.dreamnetworkbans.tables.GeoLocalizations
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
-class BanCommand(val m: DreamNetworkBans) : AbstractCommand("ban", permission = "dreamnetworkbans.ban", aliases = arrayOf("banir")) {
+class BanCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("ban", "banir"), permission = "dreamnetworkbans.ban") {
+
 	@Subcommand
-	fun root(sender: CommandSender) {
+	suspend fun root(sender: CommandSender) {
 		sender.sendMessage("§cUse /ban jogador motivo".toTextComponent())
 	}
 	
 	@Subcommand
-	fun withoutReason(sender: CommandSender, player: String) {
+	suspend fun withoutReason(sender: CommandSender, player: String) {
 		ban(sender, player, null)
 	}
 
 	@Subcommand
-	fun ban(sender: CommandSender, playerName: String, @InjectArgument(ArgumentType.ARGUMENT_LIST) reason: String?) {
+	suspend fun ban(sender: CommandSender, playerName: String, @InjectArgument(ArgumentType.ALL_ARGUMENTS) reason: String?) {
 		var punishedUniqueId: UUID? = null
 		var punishedDisplayName: String? = null
 

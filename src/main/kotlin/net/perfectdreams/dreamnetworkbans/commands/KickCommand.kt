@@ -2,18 +2,20 @@ package net.perfectdreams.dreamnetworkbans.commands
 
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.connection.ProxiedPlayer
+import net.perfectdreams.commands.ArgumentType
+import net.perfectdreams.commands.annotation.InjectArgument
+import net.perfectdreams.commands.annotation.Subcommand
+import net.perfectdreams.dreamcorebungee.commands.SparklyBungeeCommand
 import net.perfectdreams.dreamcorebungee.network.DreamNetwork
-import net.perfectdreams.dreamcorebungee.utils.commands.AbstractCommand
-import net.perfectdreams.dreamcorebungee.utils.commands.annotation.ArgumentType
-import net.perfectdreams.dreamcorebungee.utils.commands.annotation.InjectArgument
-import net.perfectdreams.dreamcorebungee.utils.commands.annotation.Subcommand
 import net.perfectdreams.dreamcorebungee.utils.extensions.toTextComponent
 import net.perfectdreams.dreamnetworkbans.DreamNetworkBans
+import net.perfectdreams.dreamnetworkbans.utils.CustomArgument
+import net.perfectdreams.dreamnetworkbans.utils.InjectCustomArgument
 
-class KickCommand(val m: DreamNetworkBans) : AbstractCommand("kick", permission = "dreamnetworkbans.kick") {
+class KickCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("kick"), permission = "dreamnetworkbans.kick") {
 	
 	@Subcommand
-    fun kick(sender: CommandSender, @InjectArgument(ArgumentType.PLAYER) player: ProxiedPlayer?, @InjectArgument(ArgumentType.ARGUMENT_LIST) reason: String?) {
+    fun kick(sender: CommandSender, @InjectCustomArgument(CustomArgument.PLAYER) player: ProxiedPlayer?, @InjectArgument(ArgumentType.ALL_ARGUMENTS) reason: String?) {
 		if (player == null) {
 			return sender.sendMessage("§cEste jogador não pôde ser encontrado!".toTextComponent())
 		}

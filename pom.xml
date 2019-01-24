@@ -30,7 +30,7 @@
         </repository>
         <repository>
             <id>perfectdreams-repo</id>
-            <url>https://repo.perfectdreams.net/</url>
+            <url>http://repo.perfectdreams.net/</url>
             <snapshots>
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy>
@@ -51,7 +51,6 @@
             <artifactId>waterfall-api</artifactId>
             <version>1.13-SNAPSHOT</version>
             <type>jar</type>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -63,12 +62,6 @@
             <groupId>net.perfectdreams.dreamcorebungee</groupId>
             <artifactId>DreamCoreBungee</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.PerfectDreams</groupId>
-            <artifactId>ProtocolSupportBungee</artifactId>
-            <version>fix~jitpack-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
