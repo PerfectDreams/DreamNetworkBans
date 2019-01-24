@@ -10,15 +10,11 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 
 class DreamNetworkBans : KotlinPlugin() {
-	companion object {
-		lateinit var INSTANCE: DreamNetworkBans
-	}
 
 	var youtuberNames = mutableSetOf<String>()
 
 	override fun onEnable() {
 		super.onEnable()
-		INSTANCE = this
 
 		registerCommand(BanCommand(this))
 		registerCommand(CheckBanCommand(this))
