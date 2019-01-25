@@ -11,7 +11,10 @@ import java.io.File
 
 class DreamNetworkBans : KotlinPlugin() {
 
+	val youtubersFile = File(this.dataFolder, "youtubers.json")
 	var youtuberNames = mutableSetOf<String>()
+
+	val staffIps = File(this.dataFolder, "staffips.json")
 
 	override fun onEnable() {
 		super.onEnable()
@@ -28,10 +31,14 @@ class DreamNetworkBans : KotlinPlugin() {
 
 		this.proxy.pluginManager.registerListener(this, LoginListener(this))
 
-		val youtubersFile = File("youtubers.json")
 		if (!youtubersFile.exists()) {
 			youtubersFile.createNewFile()
 			youtubersFile.writeText("[]")
+		}
+
+		if (!staffIps.exists()) {
+			staffIps.createNewFile()
+			staffIps.writeText("{}")
 		}
 
 		transaction(Databases.databaseNetwork) {

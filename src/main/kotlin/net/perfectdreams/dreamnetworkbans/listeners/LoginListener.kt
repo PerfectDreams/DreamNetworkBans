@@ -1,13 +1,18 @@
 package net.perfectdreams.dreamnetworkbans.listeners
 
+import com.github.salomonbrys.kotson.nullObj
+import com.github.salomonbrys.kotson.nullString
+import com.github.salomonbrys.kotson.obj
 import net.md_5.bungee.api.event.LoginEvent
 import net.md_5.bungee.api.event.ServerKickEvent
 import net.md_5.bungee.api.event.SettingsChangedEvent
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
 import net.perfectdreams.dreamcorebungee.utils.Databases
+import net.perfectdreams.dreamcorebungee.utils.DreamUtils
 import net.perfectdreams.dreamcorebungee.utils.extensions.toTextComponent
 import net.perfectdreams.dreamnetworkbans.DreamNetworkBans
+import net.perfectdreams.dreamnetworkbans.PunishmentManager
 import net.perfectdreams.dreamnetworkbans.dao.Ban
 import net.perfectdreams.dreamnetworkbans.dao.Fingerprint
 import net.perfectdreams.dreamnetworkbans.dao.GeoLocalization
@@ -56,6 +61,26 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 		event.registerIntent(m)
 		
 		m.proxy.scheduler.runAsync(m) {
+			val staffIps = DreamUtils.jsonParser.parse(m.staffIps.readText(Charsets.UTF_8)).obj
+			val entry = staffIps[event.connection.uniqueId.toString()].nullString
+
+			if (entry != null) {
+				if (event.connection.virtualHost.hostString != entry) {
+					transaction(Databases.databaseNetwork) {
+						IpBan.new {
+							this.ip = event.connection.address.hostString
+							this.punisherName = "Pantufa"
+							this.punishedBy = null
+							this.punishedAt = System.currentTimeMillis()
+							this.reason = "Tentar entrar com uma conta de um membro da equipe.\nMais sorte da próxima vez!"
+						}
+					}
+
+					event.completeIntent(m)
+					return@runAsync
+				}
+			}
+
 			val geoLocalization = transaction(Databases.databaseNetwork) {
 				GeoLocalization.find { GeoLocalizations.ip eq event.connection.address.hostString }.firstOrNull()
 			}
