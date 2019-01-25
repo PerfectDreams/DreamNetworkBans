@@ -74,6 +74,21 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 							this.punishedAt = System.currentTimeMillis()
 							this.reason = "Tentar entrar com uma conta de um membro da equipe.\nMais sorte da próxima vez!"
 						}
+
+						val geoLocalizations = GeoLocalization.find {
+							GeoLocalizations.ip eq event.connection.address.hostString
+						}.toList()
+
+						val uids = geoLocalizations.distinctBy { it.player }.map { it.player }
+						uids.forEach {
+							Ban.new {
+								this.player = it
+								this.punisherName = "Pantufa"
+								this.punishedBy = null
+								this.punishedAt = System.currentTimeMillis()
+								this.reason = "Tentar entrar com uma conta de um membro da equipe.\nMais sorte da próxima vez!"
+							}
+						}
 					}
 
 					event.completeIntent(m)
