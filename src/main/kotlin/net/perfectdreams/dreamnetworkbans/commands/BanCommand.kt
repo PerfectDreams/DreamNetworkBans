@@ -21,17 +21,17 @@ import java.util.*
 class BanCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("ban", "banir"), permission = "dreamnetworkbans.ban") {
 
 	@Subcommand
-	suspend fun root(sender: CommandSender) {
+	fun root(sender: CommandSender) {
 		sender.sendMessage("§cUse /ban jogador motivo".toTextComponent())
 	}
 	
 	@Subcommand
-	suspend fun withoutReason(sender: CommandSender, player: String) {
+	fun withoutReason(sender: CommandSender, player: String) {
 		ban(sender, player, null)
 	}
 
 	@Subcommand
-	suspend fun ban(sender: CommandSender, playerName: String, @InjectArgument(ArgumentType.ALL_ARGUMENTS) reason: String?) {
+	fun ban(sender: CommandSender, playerName: String, @InjectArgument(ArgumentType.ALL_ARGUMENTS) reason: String?) {
 		var punishedUniqueId: UUID? = null
 		var punishedDisplayName: String? = null
 
