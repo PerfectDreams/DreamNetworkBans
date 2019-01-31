@@ -11,17 +11,19 @@ import java.io.File
 
 class DreamNetworkBans : KotlinPlugin() {
 
-	val youtubersFile = File(this.dataFolder, "youtubers.json")
+	val youtubersFile by lazy { File(this.dataFolder, "youtubers.json") }
 	var youtuberNames = mutableSetOf<String>()
-
-	val staffIps = File(this.dataFolder, "staffips.json")
-
+	
+	val staffIps by lazy { File(this.dataFolder, "staffips.json") }
+	
 	override fun onEnable() {
 		super.onEnable()
-
+		
+		this.dataFolder.mkdirs()
 		registerCommand(BanCommand(this))
 		registerCommand(CheckBanCommand(this))
 		registerCommand(FingerprintCommand(this))
+		registerCommand(DupeIpCommand(this))
 		registerCommand(IPReportCommand(this))
 		registerCommand(KickCommand(this))
 		registerCommand(UnbanCommand(this))

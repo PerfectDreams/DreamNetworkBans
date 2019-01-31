@@ -97,7 +97,7 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 			}
 
 			val geoLocalization = transaction(Databases.databaseNetwork) {
-				GeoLocalization.find { GeoLocalizations.ip eq event.connection.address.hostString }.firstOrNull()
+				GeoLocalization.find { GeoLocalizations.player eq event.connection.uniqueId }.firstOrNull()
 			}
 			
 			if (geoLocalization == null) {
