@@ -14,6 +14,8 @@ import net.perfectdreams.dreamnetworkbans.dao.GeoLocalization
 import net.perfectdreams.dreamnetworkbans.tables.GeoLocalizations
 import net.perfectdreams.dreamcorebungee.tables.Users
 import net.perfectdreams.dreamcorebungee.dao.User
+import net.perfectdreams.dreamnetworkbans.dao.Ban
+import net.perfectdreams.dreamnetworkbans.tables.Bans
 class DupeIpCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("dupeip"), permission = "dreamnetworkbans.ban") {
 	
 	@Subcommand
@@ -28,28 +30,48 @@ class DupeIpCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("dup
 		}
 		// Caso achar...
 		if (playerIP != null) {
+			sender.sendMessage("Escaneando ${playerName} em ${playerIP.ip}.".toTextComponent())
+			
 			// Agora vamos achar todos os players que tem o mesmo IP
 			val geolocalizations = transaction(Databases.databaseNetwork) {
 				GeoLocalization.find { GeoLocalizations.ip eq playerIP.ip }.toList()
-			}
-			// Contas e os nomes (depois vai juntar tudo)
+			}						
+			// Tipos
 			var accounts : String = ""
-			var displayName: String = ""
+		
 			
 			// Vamos pegar apenas os uids e fazer um forEach
 			val uids = geolocalizations.distinctBy { it.player }.map { it.player }
 			uids.forEach {
-				//:tobias_hat:
-				transaction(Databases.databaseNetwork) {
-					val user = User.findById(it)
-					if (user != null) {
-						displayName = user.username
-					}
+				// Está banido?
+				val isBanned = transaction(Databases.databaseNetwork) {
+					Ban.find { Bans.player eq it }.firstOrNull()
 				}
-				accounts += "§8Usuarios com o mesmo ip: §l${displayName} "
+				// Se ele estiver banido...
+				if (isBanned != null) {
+					val punishedName = transaction(Databases.databaseNetwork) { User.findById(isBanned.player)}
+					if (punishedName == null) { return }
+					accounts += "§c${punishedName.username},"
+				}
+				// Está online?
+				val isOnline = m.proxy.getPlayer(it)
+				if (isOnline != null && isOnline.isConnected()) {
+					// Sim ele está online
+					val onlineName = transaction(Databases.databaseNetwork) { User.findById(it) }
+					if (onlineName == null) { return }
+					accounts += "§a${onlineName.username},"
+				} else {
+					// Ele não está online
+					val offlineName = transaction(Databases.databaseNetwork) { User.findById(it) }
+					if (offlineName == null) { return }
+					accounts += "§8${offlineName.username},"
+				} 
+				
+				//accounts += " §l${displayName} "
 			}
 			// Mandar o resultado final
-			sender.sendMessage(accounts.toTextComponent())
+		
+			sender.sendMessage("[§cBanidos§f] [§aOnline§f] [§8Offline§f] \n${accounts}".toTextComponent())
 		} else {
 			sender.sendMessage("§cNão achei nenhum Player com esse nome!".toTextComponent())
 		}
