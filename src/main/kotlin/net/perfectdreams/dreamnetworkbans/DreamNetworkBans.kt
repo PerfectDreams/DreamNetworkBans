@@ -13,9 +13,9 @@ class DreamNetworkBans : KotlinPlugin() {
 
 	val youtubersFile by lazy { File(this.dataFolder, "youtubers.json") }
 	var youtuberNames = mutableSetOf<String>()
-
- 	val staffIps by lazy { File(this.dataFolder, "staffips.json") }
 	
+  val staffIps by lazy { File(this.dataFolder, "staffips.json") }
+  
 	override fun onEnable() {
 		super.onEnable()
 
@@ -23,6 +23,7 @@ class DreamNetworkBans : KotlinPlugin() {
 		registerCommand(BanCommand(this))
 		registerCommand(CheckBanCommand(this))
 		registerCommand(FingerprintCommand(this))
+		registerCommand(DupeIpCommand(this))
 		registerCommand(IPReportCommand(this))
 		registerCommand(KickCommand(this))
 		registerCommand(UnbanCommand(this))
