@@ -43,7 +43,7 @@ class DupeIpCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("dup
 			// Vamos pegar apenas os uids e fazer um forEach
 			val uids = geolocalizations.distinctBy { it.player }.map { it.player }
 			uids.forEach {
-				// Está banido?
+				// EstÃ¡ banido?
 				val isBanned = transaction(Databases.databaseNetwork) {
 					Ban.find { Bans.player eq it }.firstOrNull()
 				}
@@ -51,29 +51,28 @@ class DupeIpCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("dup
 				if (isBanned != null) {
 					val punishedName = transaction(Databases.databaseNetwork) { User.findById(isBanned.player)}
 					if (punishedName == null) { return }
-					accounts += "§c${punishedName.username},"
+					accounts += "Â§c${punishedName.username},"
 				}
-				// Está online?
+				// EstÃ¡ online?
 				val isOnline = m.proxy.getPlayer(it)
 				if (isOnline != null && isOnline.isConnected()) {
-					// Sim ele está online
+					// Sim ele estÃ¡ online
 					val onlineName = transaction(Databases.databaseNetwork) { User.findById(it) }
 					if (onlineName == null) { return }
-					accounts += "§a${onlineName.username},"
+					accounts += "Â§a${onlineName.username},"
 				} else {
-					// Ele não está online
+					// Ele nÃ£o estÃ¡ online
 					val offlineName = transaction(Databases.databaseNetwork) { User.findById(it) }
 					if (offlineName == null) { return }
-					accounts += "§8${offlineName.username},"
+					accounts += "Â§8${offlineName.username},"
 				} 
 				
-				//accounts += " §l${displayName} "
 			}
 			// Mandar o resultado final
 		
-			sender.sendMessage("[§cBanidos§f] [§aOnline§f] [§8Offline§f] \n${accounts}".toTextComponent())
+			sender.sendMessage("[Â§cBanidosÂ§f] [Â§aOnlineÂ§f] [Â§8OfflineÂ§f] \n${accounts}".toTextComponent())
 		} else {
-			sender.sendMessage("§cNão achei nenhum Player com esse nome!".toTextComponent())
+			sender.sendMessage("Â§cNÃ£o achei nenhum Player com esse nome!".toTextComponent())
 		}
 	}
 }
