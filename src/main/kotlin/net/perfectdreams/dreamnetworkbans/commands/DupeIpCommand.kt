@@ -16,7 +16,7 @@ import net.perfectdreams.dreamcorebungee.tables.Users
 import net.perfectdreams.dreamcorebungee.dao.User
 import net.perfectdreams.dreamnetworkbans.dao.Ban
 import net.perfectdreams.dreamnetworkbans.tables.Bans
-class DupeIpCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("dupeip"), permission = "dreamnetworkbans.ban") {
+class DupeIpCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("dupeip"), permission = "dreamnetworkbans.dupeip") {
 	
 	@Subcommand
 	fun dupeIp(sender: CommandSender, playerName: String) {
