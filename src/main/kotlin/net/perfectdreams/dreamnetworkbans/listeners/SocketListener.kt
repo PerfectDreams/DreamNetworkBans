@@ -52,7 +52,7 @@ class SocketListener(val m: DreamNetworkBans) : Listener {
 			if (m.loggedInPlayers.contains(sender.uniqueId))
 				return
 
-			if (commands.any { it.startsWith(e.message, true) })
+			if (commands.any { e.message.startsWith(it, true) })
 				return
 
 			e.isCancelled = true
