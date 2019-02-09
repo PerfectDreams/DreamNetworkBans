@@ -61,7 +61,7 @@ class DupeIpCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("dup
 					// Ele não está online
 					val offlineName = transaction(Databases.databaseNetwork) { User.findById(it) }
 
-					return@joinToString "§7${offlineName?.username},"
+					return@joinToString "§7${offlineName?.username}"
 				}
 			})
 
