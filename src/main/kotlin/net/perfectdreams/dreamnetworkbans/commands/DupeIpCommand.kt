@@ -30,47 +30,43 @@ class DupeIpCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("dup
 		}
 		// Caso achar...
 		if (playerIP != null) {
-			sender.sendMessage("Escaneando ${playerName} em ${playerIP.ip}.".toTextComponent())
+			sender.sendMessage("Escaneando ${playerName} em ${playerIP.ip}".toTextComponent())
 			
 			// Agora vamos achar todos os players que tem o mesmo IP
 			val geolocalizations = transaction(Databases.databaseNetwork) {
 				GeoLocalization.find { GeoLocalizations.ip eq playerIP.ip }.toList()
-			}						
-			// Tipos
-			var accounts : String = ""
-		
-			
-			// Vamos pegar apenas os uids e fazer um forEach
+			}
+
 			val uids = geolocalizations.distinctBy { it.player }.map { it.player }
-			uids.forEach {
+			val accounts = uids.joinToString(", ", transform = {
 				// Está banido?
-				val isBanned = transaction(Databases.databaseNetwork) {
+				val ban = transaction(Databases.databaseNetwork) {
 					Ban.find { Bans.player eq it }.firstOrNull()
 				}
 				// Se ele estiver banido...
-				if (isBanned != null) {
-					val punishedName = transaction(Databases.databaseNetwork) { User.findById(isBanned.player)}
-					if (punishedName == null) { return }
-					accounts += "§c${punishedName.username},"
+				if (ban != null) {
+					val punishedName = transaction(Databases.databaseNetwork) { User.findById(ban.player) }
+
+					return@joinToString "§c${punishedName?.username}"
 				}
+
 				// Está online?
 				val isOnline = m.proxy.getPlayer(it)
-				if (isOnline != null && isOnline.isConnected()) {
+				if (isOnline != null && isOnline.isConnected) {
 					// Sim ele está online
 					val onlineName = transaction(Databases.databaseNetwork) { User.findById(it) }
-					if (onlineName == null) { return }
-					accounts += "§a${onlineName.username},"
+
+					return@joinToString "§a${onlineName?.username}"
 				} else {
 					// Ele não está online
 					val offlineName = transaction(Databases.databaseNetwork) { User.findById(it) }
-					if (offlineName == null) { return }
-					accounts += "§8${offlineName.username},"
-				} 
-				
-			}
+
+					return@joinToString "§7${offlineName?.username},"
+				}
+			})
+
 			// Mandar o resultado final
-		
-			sender.sendMessage("[§cBanidos§f] [§aOnline§f] [§8Offline§f] \n${accounts}".toTextComponent())
+			sender.sendMessage("[§cBanidos§f] [§aOnline§f] [§7Offline§f] \n${accounts}".toTextComponent())
 		} else {
 			sender.sendMessage("§cNão achei nenhum Player com esse nome!".toTextComponent())
 		}
