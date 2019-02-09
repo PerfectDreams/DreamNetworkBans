@@ -64,6 +64,12 @@
             <version>1.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.ProtocolSupport</groupId>
+            <artifactId>ProtocolSupportBungee</artifactId>
+            <version>6718e7d</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
