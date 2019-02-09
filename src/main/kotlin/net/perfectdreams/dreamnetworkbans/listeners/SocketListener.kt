@@ -51,7 +51,7 @@ class SocketListener(val m: DreamNetworkBans) : Listener {
 		if (e.isCommand && sender is ProxiedPlayer) { // Cancelar coisas que não podem ser executadas antes de logar
 			if (m.loggedInPlayers.contains(sender.uniqueId))
 				return
-			
+
 			if (commands.any { it.startsWith(e.message, true) })
 				return
 
@@ -70,7 +70,8 @@ class SocketListener(val m: DreamNetworkBans) : Listener {
 		when (type) {
 			"loggedIn" -> {
 				val player = e.json["player"].string
-
+				m.loggedInPlayers.add(UUID.fromString(player))
+				m.logger.info("Player ${player} foi marcado como logado na rede! Yay!")
 			}
 			"sendAdminChat" -> {
 				val player = e.json["player"].string
