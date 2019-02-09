@@ -8,14 +8,25 @@ import net.perfectdreams.dreamnetworkbans.tables.*
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
+import net.md_5.bungee.config.YamlConfiguration
+import net.md_5.bungee.config.ConfigurationProvider
+import net.perfectdreams.dreamcorebungee.utils.discord.DiscordWebhook
+
 
 class DreamNetworkBans : KotlinPlugin() {
-
 	val youtubersFile by lazy { File(this.dataFolder, "youtubers.json") }
 	var youtuberNames = mutableSetOf<String>()
-	
-  val staffIps by lazy { File(this.dataFolder, "staffips.json") }
-  
+
+	val staffIps by lazy { File(this.dataFolder, "staff_ips.json") }
+
+	val config by lazy {
+		ConfigurationProvider.getProvider(YamlConfiguration::class.java).load(File(dataFolder, "config.yml"))
+	}
+
+	val adminChatWebhook by lazy {
+		DiscordWebhook(config.getString("adminchat-webhook"))
+	}
+
 	override fun onEnable() {
 		super.onEnable()
 
@@ -30,6 +41,7 @@ class DreamNetworkBans : KotlinPlugin() {
 		registerCommand(UnwarnCommand())
 		registerCommand(WarnCommand(this))
 		registerCommand(YouTuberAssistCommand(this))
+		registerCommand(AdminChatCommand(this))
 
 		this.proxy.pluginManager.registerListener(this, LoginListener(this))
 
