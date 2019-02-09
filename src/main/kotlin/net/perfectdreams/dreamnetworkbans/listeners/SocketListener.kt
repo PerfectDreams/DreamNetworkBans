@@ -3,9 +3,7 @@ package net.perfectdreams.dreamnetworkbans.listeners
 import com.github.salomonbrys.kotson.*
 import net.md_5.bungee.api.chat.HoverEvent
 import net.md_5.bungee.api.connection.ProxiedPlayer
-import net.md_5.bungee.api.event.LoginEvent
-import net.md_5.bungee.api.event.ServerKickEvent
-import net.md_5.bungee.api.event.SettingsChangedEvent
+import net.md_5.bungee.api.event.*
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
 import net.perfectdreams.dreamcorebungee.network.socket.SocketReceivedEvent
@@ -30,6 +28,37 @@ import java.util.*
 import java.util.regex.Pattern
 
 class SocketListener(val m: DreamNetworkBans) : Listener {
+	companion object {
+	    val commands = listOf(
+				"/login",
+				"/logar",
+				"/registrar",
+				"/register",
+				"/recuperar",
+				"/2fa"
+		)
+	}
+
+	@EventHandler
+	fun onQuit(e: PlayerDisconnectEvent) {
+		m.loggedInPlayers.remove(e.player.uniqueId)
+	}
+
+	@EventHandler
+	fun onCommand(e: ChatEvent) {
+		val sender = e.sender
+
+		if (e.isCommand && sender is ProxiedPlayer) { // Cancelar coisas que não podem ser executadas antes de logar
+			if (m.loggedInPlayers.contains(sender.uniqueId))
+				return
+			
+			if (commands.any { it.startsWith(e.message, true) })
+				return
+
+			e.isCancelled = true
+		}
+	}
+
 	@EventHandler
 	fun onLogin(e: SocketReceivedEvent) {
 		val type = e.json["type"].nullString ?: return
@@ -39,6 +68,10 @@ class SocketListener(val m: DreamNetworkBans) : Listener {
 
 		// Caso aconteça algum erro, { "error": { ... } }
 		when (type) {
+			"loggedIn" -> {
+				val player = e.json["player"].string
+
+			}
 			"sendAdminChat" -> {
 				val player = e.json["player"].string
 				val message = e.json["message"].string

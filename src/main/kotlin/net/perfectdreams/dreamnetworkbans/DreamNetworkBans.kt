@@ -12,6 +12,8 @@ import net.md_5.bungee.config.YamlConfiguration
 import net.md_5.bungee.config.ConfigurationProvider
 import net.perfectdreams.dreamcorebungee.utils.discord.DiscordWebhook
 import net.perfectdreams.dreamnetworkbans.listeners.SocketListener
+import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 
 class DreamNetworkBans : KotlinPlugin() {
@@ -27,6 +29,8 @@ class DreamNetworkBans : KotlinPlugin() {
 	val adminChatWebhook by lazy {
 		DiscordWebhook(config.getString("adminchat-webhook"))
 	}
+
+	val loggedInPlayers = Collections.newSetFromMap(ConcurrentHashMap<UUID, Boolean>())
 
 	override fun onEnable() {
 		super.onEnable()
