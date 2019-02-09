@@ -23,7 +23,7 @@ class DiscordCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("di
 	
 	@Subcommand(["registrar", "register"])
 	fun register(sender: ProxiedPlayer) {
-		val account = transaction(Databases.databaseServer) {
+		val account = transaction(Databases.databaseNetwork) {
 			DiscordAccount.find { DiscordAccounts.minecraftId eq sender.uniqueId }
 					.firstOrNull()
 		}
