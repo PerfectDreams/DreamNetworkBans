@@ -33,7 +33,7 @@ class DiscordCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("di
 			return
 		}
 
-		transaction(Databases.databaseServer) {
+		transaction(Databases.databaseNetwork) {
 			account.isConnected = true
 		}
 
