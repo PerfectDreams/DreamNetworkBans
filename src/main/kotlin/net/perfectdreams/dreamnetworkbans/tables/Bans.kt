@@ -15,6 +15,6 @@ object Bans : LongIdTable() {
 	val punishedAt = long("punished_at")
 	// Motivo da punição
 	val reason = text("reason").nullable()
-	val temporary = bool("temporary")
+	val temporary = bool("temporary").default(false)
 	val expiresAt = long("expires_at").nullable()
 }
