@@ -57,6 +57,8 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 							this.reason = "Tentar entrar com uma conta de um membro da equipe.\nMais sorte da próxima vez!"
 						}
 					}
+					// Trollei
+					event.setCancelReason("Internal Exception: java.io.IOException: An existing connection was forcibly closed by the remote host".toTextComponent())
 				}
 			}
 			event.completeIntent(m)
