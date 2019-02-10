@@ -30,6 +30,15 @@ import java.util.regex.Pattern
 class LoginListener(val m: DreamNetworkBans) : Listener {
 	@EventHandler
 	fun onPreLogin(event: PreLoginEvent) {
+		val playerNames = m.proxy.players.map { it.name }
+
+		if (event.connection.name in playerNames) {
+			event.isCancelled = true
+			event.setCancelReason("§cJá há um player com o nome §e${event.connection.name}§c conectado no servidor!".toTextComponent())
+
+			return
+		}
+
 		val staffIps = DreamUtils.jsonParser.parse(m.staffIps.readText(Charsets.UTF_8)).obj
 		val entry = staffIps[event.connection.name.toString()].nullString
 
@@ -38,6 +47,7 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 		m.proxy.scheduler.runAsync(m) {
 			if (entry != null) {
 				if (event.connection.virtualHost.hostString != entry) {
+					event.isCancelled = true
 					transaction(Databases.databaseNetwork) {
 						IpBan.new {
 							this.ip = event.connection.address.hostString
