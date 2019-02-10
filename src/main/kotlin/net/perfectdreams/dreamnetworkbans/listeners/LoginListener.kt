@@ -90,7 +90,7 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 			event.setCancelReason("""
 				§eVocê parece ser alguém famoso...
 					|
-					|§aCaso você seja §b${event.connection.name}§a, por favor, mande um email confirmando a sua identidade para §3leonardomalaman@gmail.com§a, obrigado! :)
+					|§aCaso você seja §b${event.connection.name}§a, por favor, mande um email confirmando a sua identidade para §3mrpowergamerbr@perfectdreams.net§a, obrigado! :)
 					|
 					|§aSei que é chato, mas sempre existem aquelas pessoas mal intencionadas que tentam se passar por YouTubers... :(
 					""".trimMargin().toTextComponent())
