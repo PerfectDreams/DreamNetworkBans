@@ -57,11 +57,10 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 							this.reason = "Tentar entrar com uma conta de um membro da equipe.\nMais sorte da próxima vez!"
 						}
 					}
-
-					event.completeIntent(m)
-					return@runAsync
 				}
 			}
+			event.completeIntent(m)
+			return@runAsync
 		}
 	}
 
