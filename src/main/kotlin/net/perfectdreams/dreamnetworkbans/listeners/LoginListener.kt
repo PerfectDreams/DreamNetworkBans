@@ -71,7 +71,7 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 		val pattern = Pattern.compile("[a-zA-Z0-9_]{3,16}")
 		val matcher = pattern.matcher(event.connection.name)
 
-		if (!matcher.find()) {
+		if (!matcher.matches()) {
 			event.isCancelled = true
 			event.setCancelReason("""
 				§cSeu nickname não atende aos critérios necessários!
