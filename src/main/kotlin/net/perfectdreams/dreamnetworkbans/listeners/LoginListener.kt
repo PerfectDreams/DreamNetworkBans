@@ -62,7 +62,7 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 		
 		m.proxy.scheduler.runAsync(m) {
 			val staffIps = DreamUtils.jsonParser.parse(m.staffIps.readText(Charsets.UTF_8)).obj
-			val entry = staffIps[event.connection.uniqueId.toString()].nullString
+			val entry = staffIps[event.connection.name.toString()].nullString
 
 			if (entry != null) {
 				if (event.connection.virtualHost.hostString != entry) {
