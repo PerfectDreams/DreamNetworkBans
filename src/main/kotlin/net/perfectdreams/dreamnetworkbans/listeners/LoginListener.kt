@@ -119,7 +119,7 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 					}
 				}
 
-				if (loc.region == "Germany") {
+				if (loc.country == "Germany") {
 					DreamNetwork.PANTUFA.sendMessage(
 							"477902981606408222",
 							"${event.connection.name} tentou entrar, mas a gente descobriu que ele é da Alemanha, então a gente só cortou o barato dele. <a:super_lori_happy:543235439713320972>"
@@ -132,7 +132,7 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 				}
 			}
 
-			if (geoLocalization?.region == "Germany") {
+			if (geoLocalization?.country == "Germany") {
 				DreamNetwork.PANTUFA.sendMessage(
 						"477902981606408222",
 						"${event.connection.name} tentou entrar, mas a gente descobriu que ele é da Alemanha, então a gente só cortou o barato dele. <a:super_lori_happy:543235439713320972>"
