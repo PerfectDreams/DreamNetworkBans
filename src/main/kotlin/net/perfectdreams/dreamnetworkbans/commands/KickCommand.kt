@@ -15,14 +15,18 @@ import net.perfectdreams.dreamnetworkbans.utils.InjectCustomArgument
 class KickCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("kick"), permission = "dreamnetworkbans.kick") {
 	
 	@Subcommand
-    fun kick(sender: CommandSender, @InjectCustomArgument(CustomArgument.PLAYER) player: ProxiedPlayer?, @InjectArgument(ArgumentType.ALL_ARGUMENTS) reason: String?) {
-		if (player == null) {
-			return sender.sendMessage("§cEste jogador não pôde ser encontrado!".toTextComponent())
-		}
-		
+    fun kick(sender: CommandSender, playerName: String, @InjectArgument(ArgumentType.ALL_ARGUMENTS) reason: String?) {
+		val player = m.proxy.getPlayer(playerName) ?: return sender.sendMessage("§cEste jogador não pôde ser encontrado!".toTextComponent())
+
 		var effectiveReason = reason ?: "Sem motivo definido"
 		
 		var silent = false
+		if (effectiveReason.endsWith("-f")) {
+			player.disconnect("Internal Exception: java.io.IOException: An existing connection was forcibly closed by the remote host".trimIndent().toTextComponent())
+
+			sender.sendMessage("§a${player.name} (${player.uniqueId}) kickado com sucesso pelo motivo \"$effectiveReason\"".toTextComponent())
+			return
+		}
 		if (effectiveReason.endsWith("-s")) {
 			silent = true
 			
