@@ -35,6 +35,9 @@ class DreamNetworkBans : KotlinPlugin() {
 	override fun onEnable() {
 		super.onEnable()
 
+		// Caso seja reload
+		loggedInPlayers.addAll(this.proxy.players.map { it.uniqueId })
+
 		this.dataFolder.mkdirs()
 		registerCommand(BanCommand(this))
 		registerCommand(CheckBanCommand(this))

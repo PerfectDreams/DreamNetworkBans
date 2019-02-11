@@ -3,12 +3,14 @@ package net.perfectdreams.dreamnetworkbans.listeners
 import com.github.salomonbrys.kotson.nullObj
 import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.obj
+import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.md_5.bungee.api.event.LoginEvent
 import net.md_5.bungee.api.event.PreLoginEvent
 import net.md_5.bungee.api.event.ServerKickEvent
 import net.md_5.bungee.api.event.SettingsChangedEvent
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
+import net.perfectdreams.dreamcorebungee.network.DreamNetwork
 import net.perfectdreams.dreamcorebungee.utils.Databases
 import net.perfectdreams.dreamcorebungee.utils.DreamUtils
 import net.perfectdreams.dreamcorebungee.utils.extensions.toTextComponent
@@ -116,8 +118,32 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 						this.region = loc.regionName
 					}
 				}
+
+				if (loc.region == "Germany") {
+					DreamNetwork.PANTUFA.sendMessage(
+							"477902981606408222",
+							"${event.connection.name} tentou entrar, mas a gente descobriu que ele é da Alemanha, então a gente só cortou o barato dele. <a:super_lori_happy:543235439713320972>"
+					)
+
+					event.isCancelled = true
+					event.setCancelReason("Internal Exception: java.io.IOException: An existing connection was forcibly closed by the remote host".toTextComponent())
+					event.completeIntent(m)
+					return@runAsync
+				}
 			}
-			
+
+			if (geoLocalization?.region == "Germany") {
+				DreamNetwork.PANTUFA.sendMessage(
+						"477902981606408222",
+						"${event.connection.name} tentou entrar, mas a gente descobriu que ele é da Alemanha, então a gente só cortou o barato dele. <a:super_lori_happy:543235439713320972>"
+				)
+
+				event.isCancelled = true
+				event.setCancelReason("Internal Exception: java.io.IOException: An existing connection was forcibly closed by the remote host".toTextComponent())
+				event.completeIntent(m)
+				return@runAsync
+			}
+
 			val ban = transaction(Databases.databaseNetwork) {
 				Ban.find { Bans.player eq event.connection.uniqueId }.firstOrNull()
 			}
