@@ -107,28 +107,19 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 			}
 			
 			if (geoLocalization == null) {
-				val loc = GeoUtils.getGeolocalization(event.connection.address.hostString)
-				
-				transaction(Databases.databaseNetwork) {
-					GeoLocalization.new {
-						this.player = event.connection.uniqueId
-						this.ip = event.connection.address.hostString
-						
-						this.country = loc.country
-						this.region = loc.regionName
+				// Vamos executar isto em uma thread externa, para evitar problemas
+				m.proxy.scheduler.runAsync(m) {
+					val loc = GeoUtils.getGeolocalization(event.connection.address.hostString)
+
+					transaction(Databases.databaseNetwork) {
+						GeoLocalization.new {
+							this.player = event.connection.uniqueId
+							this.ip = event.connection.address.hostString
+
+							this.country = loc.country
+							this.region = loc.regionName
+						}
 					}
-				}
-
-				if (loc.country == "Germany") {
-					DreamNetwork.PANTUFA.sendMessage(
-							"477902981606408222",
-							"${event.connection.name} tentou entrar, mas a gente descobriu que ele é da Alemanha, então a gente só cortou o barato dele. <a:super_lori_happy:543235439713320972>"
-					)
-
-					event.isCancelled = true
-					event.setCancelReason("Internal Exception: java.io.IOException: An existing connection was forcibly closed by the remote host".toTextComponent())
-					event.completeIntent(m)
-					return@runAsync
 				}
 			}
 
