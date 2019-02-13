@@ -102,11 +102,12 @@ class BanCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("ban", 
 			val timeSpec = splitted[1]
 
 			val timeMillis = timeSpec.convertToEpochMillisRelativeToNow()
-			if (timeMillis < System.currentTimeMillis()) { // :rolling_eyes:
-				sender.sendMessage("§cNão sei se você está congelado no passado, mas o tempo que você passou fica no passado! o.O".toTextComponent())
+			if (timeMillis <= System.currentTimeMillis()) { // :rolling_eyes:
+				sender.sendMessage("§cNão sei se você está congelado no passado, mas o tempo que você passou está no passado! o.O".toTextComponent())
 				return
 			}
 
+			effectiveReason = effectiveReason.replace("-t$timeSpec", "")
 			time = timeMillis
 		}
 
