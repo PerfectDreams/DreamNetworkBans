@@ -1,5 +1,6 @@
 package net.perfectdreams.dreamnetworkbans.commands
 
+import com.github.salomonbrys.kotson.jsonObject
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.perfectdreams.commands.ArgumentType
@@ -204,12 +205,21 @@ class BanCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("ban", 
 		embed.footer = ParallaxEmbed.ParallaxEmbedFooter("UUID do usuário: $punishedUniqueId", null)
 		embed.thumbnail = ParallaxEmbed.ParallaxEmbedImage("https://sparklypower.net/api/v1/render/avatar?name=$punishedDisplayName&scale=16")
 
-		if (!silent) {
-			m.proxy.broadcast("§b${punisherDisplayName}§a baniu §c${punishedDisplayName}§a por §6\"§e${effectiveReason}§6\"§a!".toTextComponent())
+		val json = jsonObject(
+				"type" to "sendMessage",
+				"message" to " ",
+				"embed" to DreamUtils.gson.toJsonTree(embed)
+		)
 
-			DreamNetwork.PANTUFA.sendMessage("378318041542426634", DreamUtils.gson.toJson(embed))
+		if (!silent) {
+			json["textChannelId"] = "378318041542426634"
+
+			m.proxy.broadcast("§b${punisherDisplayName}§a baniu §c${punishedDisplayName}§a por §6\"§e${effectiveReason}§6\"§a!".toTextComponent())
+			DreamNetwork.PANTUFA.sendAsync(json)
 		} else {
-			DreamNetwork.PANTUFA.sendMessage("506859824034611212", DreamUtils.gson.toJson(embed))
+			json["textChannelId"] = "506859824034611212"
+
+			DreamNetwork.PANTUFA.sendAsync(json)
 		}
 	}
 }
