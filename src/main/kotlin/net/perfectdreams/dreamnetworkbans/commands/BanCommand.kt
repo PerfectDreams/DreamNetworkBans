@@ -196,7 +196,7 @@ class BanCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("ban", 
 
 		embed.addField("Quem puniu", sender.name, true)
 		embed.addField("Motivo", effectiveReason, true)
-		embed.addField("Servidor", player?.server?.info?.name ?: "Desconhecido", true)
+		embed.addField("Servidor", (sender as? ProxiedPlayer)?.server?.info?.name ?: "Desconhecido", true)
 
 		if (temporary) {
 			embed.addField("Duração", DateUtils.formatDateDiff(time), true)
