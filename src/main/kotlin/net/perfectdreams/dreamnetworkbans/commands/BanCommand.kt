@@ -1,6 +1,7 @@
 package net.perfectdreams.dreamnetworkbans.commands
 
 import com.github.salomonbrys.kotson.jsonObject
+import com.github.salomonbrys.kotson.set
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.perfectdreams.commands.ArgumentType
@@ -102,6 +103,7 @@ class BanCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("ban", 
 
 			val timeMillis = timeSpec.convertToEpochMillisRelativeToNow()
 			if (timeMillis < System.currentTimeMillis()) { // :rolling_eyes:
+				sender.sendMessage("§cNão sei se você está congelado no passado, mas o tempo que você passou fica no passado! o.O".toTextComponent())
 				return
 			}
 
