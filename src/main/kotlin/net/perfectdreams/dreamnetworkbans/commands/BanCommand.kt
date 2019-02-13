@@ -8,6 +8,8 @@ import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.dreamcorebungee.commands.SparklyBungeeCommand
 import net.perfectdreams.dreamcorebungee.network.DreamNetwork
 import net.perfectdreams.dreamcorebungee.utils.Databases
+import net.perfectdreams.dreamcorebungee.utils.DreamUtils
+import net.perfectdreams.dreamcorebungee.utils.ParallaxEmbed
 import net.perfectdreams.dreamcorebungee.utils.extensions.toTextComponent
 import net.perfectdreams.dreamnetworkbans.DreamNetworkBans
 import net.perfectdreams.dreamnetworkbans.PunishmentManager
@@ -184,18 +186,30 @@ class BanCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("ban", 
 
 		sender.sendMessage("§b${punishedDisplayName}§a foi punido com sucesso, yay!! ^-^".toTextComponent())
 
-		if (silent) {
-			DreamNetwork.PANTUFA.sendMessage(
-					"506859824034611212",
-					"**$playerName** foi banido permanentemente!\nFazer o que né, não soube ler as regras!\n\n**Banido pelo:** ${punisherDisplayName}\n**Motivo:** $effectiveReason\n**Servidor:** ${player?.server?.info?.name ?: "Desconhecido"}"
-			)
-		} else {
+		val embed = ParallaxEmbed()
+
+		embed.title = "$punishedDisplayName | Banido ${if (temporary) "Temporariamente" else "Permanentemente"}"
+		embed.description = "Fazer o que né, não soube ler as regras! <:sad_cat:419474182758334465>"
+
+		embed.addField("Quem puniu", sender.name, true)
+		embed.addField("Motivo", effectiveReason, true)
+		embed.addField("Servidor", player?.server?.info?.name ?: "Desconhecido", true)
+
+		if (temporary) {
+			embed.addField("Duração", DateUtils.formatDateDiff(time), true)
+		}
+
+		embed.rgb = ParallaxEmbed.ParallaxColor(114, 137, 218)
+
+		embed.footer = ParallaxEmbed.ParallaxEmbedFooter("UUID do usuário: $punishedUniqueId", null)
+		embed.thumbnail = ParallaxEmbed.ParallaxEmbedImage("https://sparklypower.net/api/v1/render/avatar?name=$punishedDisplayName&scale=16")
+
+		if (!silent) {
 			m.proxy.broadcast("§b${punisherDisplayName}§a baniu §c${punishedDisplayName}§a por §6\"§e${effectiveReason}§6\"§a!".toTextComponent())
 
-			DreamNetwork.PANTUFA.sendMessage(
-					"378318041542426634",
-					"**$playerName** foi banido permanentemente!\nFazer o que né, não soube ler as regras!\n\n**Banido pelo:** ${punisherDisplayName}\n**Motivo:** $effectiveReason\n**Servidor:** ${player?.server?.info?.name ?: "Desconhecido"}"
-			)
+			DreamNetwork.PANTUFA.sendMessage("378318041542426634", DreamUtils.gson.toJson(embed))
+		} else {
+			DreamNetwork.PANTUFA.sendMessage("506859824034611212", DreamUtils.gson.toJson(embed))
 		}
 	}
 }
