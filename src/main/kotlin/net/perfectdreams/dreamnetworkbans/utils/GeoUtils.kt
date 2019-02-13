@@ -10,8 +10,9 @@ object GeoUtils {
 	
 	fun getGeolocalization(address: String): GeoLocalization {
 		val request = HttpRequest.get("http://ip-api.com/json/$address")
+				.connectTimeout(2500)
 				.userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0")
-		
+
 		if (!request.ok())
 			throw RuntimeException("Request for http://ip-api.com/json/$address is not OK")
 		
