@@ -187,14 +187,14 @@ class BanCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("ban", 
 		if (silent) {
 			DreamNetwork.PANTUFA.sendMessage(
 					"506859824034611212",
-					"**$playerName** foi banido permanentemente!\nFazer o que né, não soube ler as regras!\n\n**Banido pelo:** ${punisherDisplayName}\n**Motivo:** $reason\n**Servidor:** ${player?.server?.info?.name ?: "Desconhecido"}"
+					"**$playerName** foi banido permanentemente!\nFazer o que né, não soube ler as regras!\n\n**Banido pelo:** ${punisherDisplayName}\n**Motivo:** $effectiveReason\n**Servidor:** ${player?.server?.info?.name ?: "Desconhecido"}"
 			)
 		} else {
 			m.proxy.broadcast("§b${punisherDisplayName}§a baniu §c${punishedDisplayName}§a por §6\"§e${effectiveReason}§6\"§a!".toTextComponent())
 
 			DreamNetwork.PANTUFA.sendMessage(
 					"378318041542426634",
-					"**$playerName** foi banido permanentemente!\nFazer o que né, não soube ler as regras!\n\n**Banido pelo:** ${punisherDisplayName}\n**Motivo:** $reason\n**Servidor:** ${player?.server?.info?.name ?: "Desconhecido"}"
+					"**$playerName** foi banido permanentemente!\nFazer o que né, não soube ler as regras!\n\n**Banido pelo:** ${punisherDisplayName}\n**Motivo:** $effectiveReason\n**Servidor:** ${player?.server?.info?.name ?: "Desconhecido"}"
 			)
 		}
 	}
