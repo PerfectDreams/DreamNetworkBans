@@ -36,14 +36,14 @@ class CheckBanCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("c
 			}
 
 			val warns = Warn.find { Warns.player eq punishedUniqueId }.toMutableList()
-			val validWarns = warns.filter { System.currentTimeMillis() >= PunishmentManager.WARN_EXPIRATION + it.punishedAt }.sortedBy { it.punishedAt }
-			val invalidWarns = warns.filter { PunishmentManager.WARN_EXPIRATION + it.punishedAt >= System.currentTimeMillis() }.sortedBy { it.punishedAt }
+			val validWarns = warns.filter { System.currentTimeMillis() <= PunishmentManager.WARN_EXPIRATION + it.punishedAt }.sortedBy { it.punishedAt }
+			val invalidWarns = warns.filter { PunishmentManager.WARN_EXPIRATION + it.punishedAt <= System.currentTimeMillis() }.sortedBy { it.punishedAt }
 			sender.sendMessage("§eNúmero de avisos (${validWarns.size} avisos válidos):".toTextComponent())
 			for (invalidWarn in invalidWarns) {
-				sender.sendMessage("§7${invalidWarn.reason} §epor §b${invalidWarn.punishedBy}".toTextComponent())
+				sender.sendMessage("§7${invalidWarn.reason} por ${invalidWarn.punishedBy}".toTextComponent())
 			}
 			for (validWarn in validWarns) {
-				sender.sendMessage("§7${validWarn.reason} §epor §b${validWarn.punishedBy}".toTextComponent())
+				sender.sendMessage("§a${validWarn.reason} por ${validWarn.punishedBy}".toTextComponent())
 			}
 		}
 	}

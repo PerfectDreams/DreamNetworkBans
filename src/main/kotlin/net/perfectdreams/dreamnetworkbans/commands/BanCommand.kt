@@ -15,6 +15,8 @@ import net.perfectdreams.dreamnetworkbans.dao.Ban
 import net.perfectdreams.dreamnetworkbans.dao.GeoLocalization
 import net.perfectdreams.dreamnetworkbans.dao.IpBan
 import net.perfectdreams.dreamnetworkbans.tables.GeoLocalizations
+import net.perfectdreams.dreamnetworkbans.utils.DateUtils
+import net.perfectdreams.dreamnetworkbans.utils.convertToEpochMillisRelativeToNow
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
@@ -74,40 +76,93 @@ class BanCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("ban", 
 		var effectiveReason = reason ?: "Sem motivo definido"
 		
 		var silent = false
-		if (effectiveReason.endsWith("-s")) {
+		if (effectiveReason.contains("-s")) {
 			silent = true
 			
-			effectiveReason = effectiveReason.substring(0, (effectiveReason.length - "-s".length) - 1)
+			effectiveReason = effectiveReason.replace("-s", "")
+		}
+
+		var ipBan = false
+		if (effectiveReason.contains("-i")) {
+			ipBan = true
+
+			effectiveReason = effectiveReason.replace("-i", "")
+		}
+
+		var temporary = false
+		var time = 0.toLong()
+		if (effectiveReason.contains("-t")) {
+			temporary = true
+
+			val splitted = effectiveReason.split("-t")
+			val timeSpec = splitted[1]
+
+			val timeMillis = timeSpec.convertToEpochMillisRelativeToNow()
+			if (timeMillis < System.currentTimeMillis()) { // :rolling_eyes:
+				return
+			}
+
+			time = timeMillis
 		}
 
 		val punisherDisplayName = if (sender is ProxiedPlayer) {
 			sender.name
 		} else { "Pantufa" }
 
+		val geoLocalization = transaction(Databases.databaseNetwork) {
+			GeoLocalization.find { GeoLocalizations.player eq punishedUniqueId!! }.firstOrNull()
+		}
+
+		val ip = if (player != null)
+			player.address.hostString
+		else
+			geoLocalization?.ip
+
 		transaction(Databases.databaseNetwork) {
+			if (ipBan) {
+				if (ip == null) {
+					sender.sendMessage("§cInfelizmente não há nenhum registro de IP do player §e$punishedDisplayName§c!".toTextComponent())
+					return@transaction
+				}
+
+				transaction(Databases.databaseNetwork) {
+					IpBan.new {
+						this.ip = ip
+						this.player = punishedUniqueId!!
+
+						this.punisherName = punisherDisplayName
+						this.punishedBy = (sender as? ProxiedPlayer)?.uniqueId
+						this.punishedAt = System.currentTimeMillis()
+						this.reason = effectiveReason
+
+						this.temporary = temporary
+						if (temporary) {
+							this.expiresAt = time
+						}
+					}
+				}
+			}
+
 			Ban.new {
 				this.player = punishedUniqueId!!
 				this.punisherName = punisherDisplayName
 				this.punishedBy = (sender as? ProxiedPlayer)?.uniqueId
 				this.punishedAt = System.currentTimeMillis()
 				this.reason = effectiveReason
-				this.temporary = false
+
+				this.temporary = temporary
+				if (temporary) {
+					this.expiresAt = time
+				}
 			}
 		}
 		
-		val geoLocalization = transaction(Databases.databaseNetwork) {
-			GeoLocalization.find { GeoLocalizations.player eq punishedUniqueId!! }.firstOrNull()
-		}
-		
-		val ip = if (player != null)
-			player.address.hostString
-		else
-			geoLocalization?.ip
-		
-		if (ip != null) {
+		if (ip != null && !ipBan && !temporary) {
 			transaction(Databases.databaseNetwork) {
 				IpBan.new {
 					this.ip = ip
+					this.player = punishedUniqueId!!
+
 					this.punisherName = punisherDisplayName
 					this.punishedBy = (sender as? ProxiedPlayer)?.uniqueId
 					this.punishedAt = System.currentTimeMillis()
@@ -128,7 +183,6 @@ class BanCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("ban", 
         """.trimIndent().toTextComponent())
 
 		sender.sendMessage("§b${punishedDisplayName}§a foi punido com sucesso, yay!! ^-^".toTextComponent())
-		m.proxy.broadcast("§b${punisherDisplayName}§a baniu §c${punishedDisplayName}§a por §6\"§e${effectiveReason}§6\"§a!".toTextComponent())
 
 		if (silent) {
 			DreamNetwork.PANTUFA.sendMessage(
@@ -136,7 +190,8 @@ class BanCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("ban", 
 					"**$playerName** foi banido permanentemente!\nFazer o que né, não soube ler as regras!\n\n**Banido pelo:** ${punisherDisplayName}\n**Motivo:** $reason\n**Servidor:** ${player?.server?.info?.name ?: "Desconhecido"}"
 			)
 		} else {
-			m.proxy.broadcast("§c§l${punisherDisplayName}§c baniu §l$playerName§c por \"$reason\" no servidor ${player?.server?.info?.name ?: "Desconhecido"}".toTextComponent())
+			m.proxy.broadcast("§b${punisherDisplayName}§a baniu §c${punishedDisplayName}§a por §6\"§e${effectiveReason}§6\"§a!".toTextComponent())
+
 			DreamNetwork.PANTUFA.sendMessage(
 					"378318041542426634",
 					"**$playerName** foi banido permanentemente!\nFazer o que né, não soube ler as regras!\n\n**Banido pelo:** ${punisherDisplayName}\n**Motivo:** $reason\n**Servidor:** ${player?.server?.info?.name ?: "Desconhecido"}"

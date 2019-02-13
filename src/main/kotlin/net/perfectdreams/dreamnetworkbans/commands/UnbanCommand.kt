@@ -21,27 +21,10 @@ class UnbanCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("unba
 	@Subcommand
     fun unban(sender: CommandSender, playerName: String) {
 		val punishedUniqueId = try { UUID.fromString(playerName) } catch (e: IllegalArgumentException) { PunishmentManager.getUniqueId(playerName) }
-		
-		val geoLocalization = transaction(Databases.databaseNetwork) {
-			GeoLocalization.find { GeoLocalizations.player eq punishedUniqueId!! }.firstOrNull()
-		}
-		
-		val ip = geoLocalization?.ip
-
-		if (ip != null) {
-			val ipBan = transaction(Databases.databaseNetwork) {
-				IpBan.find { IpBans.ip eq ip }.firstOrNull()
-			}
-
-			if (ipBan != null) {
-				transaction(Databases.databaseNetwork) {
-					ipBan.delete()
-				}
-			}
-		}
 
 		transaction(Databases.databaseNetwork) {
 			Bans.deleteWhere { Bans.player eq punishedUniqueId }
+			IpBans.deleteWhere { IpBans.player eq punishedUniqueId }
 		}
 
 		sender.sendMessage("§b$punishedUniqueId§a desbanido com sucesso!".toTextComponent())

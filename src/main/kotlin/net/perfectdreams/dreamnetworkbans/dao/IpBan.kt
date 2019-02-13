@@ -10,6 +10,8 @@ class IpBan(id: EntityID<Long>) : LongEntity(id) {
 	companion object : LongEntityClass<IpBan>(IpBans)
 
 	var ip by IpBans.ip
+	var player by IpBans.player
+
 	var punishedBy by IpBans.punishedBy
 	var punishedAt by IpBans.punishedAt
 	var punisherName by IpBans.punisherName

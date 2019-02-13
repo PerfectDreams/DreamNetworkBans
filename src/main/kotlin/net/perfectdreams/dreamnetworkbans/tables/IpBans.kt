@@ -8,6 +8,8 @@ object IpBans : LongIdTable() {
 	// IP do player
 	// Já que a gente vai acessar se o ban existe várias vezes, vamos indexar!
 	val ip = text("ip").index()
+	val player = uuid("player").index()
+
 	// Punido por...
 	// Sim, pode ser nulo, caso seja nulo, iremos colocar quem puniu como "Pantufa"
 	val punishedBy = uuid("punished_by").nullable()
