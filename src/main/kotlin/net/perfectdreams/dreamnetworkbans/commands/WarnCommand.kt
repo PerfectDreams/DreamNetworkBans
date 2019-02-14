@@ -341,7 +341,7 @@ class WarnCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("warn"
 		embed.title = "$playerName | Avisado"
 		embed.description = "Fazer o que né, não soube ler as regras! <:sad_cat:419474182758334465>"
 
-		embed.addField("Quem puniu", playerName, true)
+		embed.addField("Quem puniu", (sender as? ProxiedPlayer)?.name ?: "Pantufa", true)
 		embed.addField("Motivo", effectiveReason, true)
 		embed.addField("Servidor", (sender as? ProxiedPlayer)?.server?.info?.name ?: "Desconhecido", true)
 
@@ -374,7 +374,7 @@ class WarnCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("warn"
 		embed.title = "$playerName | Banido ${if (temporary) "Temporariamente" else "Permanentemente"}"
 		embed.description = "Fazer o que né, não soube ler as regras! <:sad_cat:419474182758334465>"
 
-		embed.addField("Quem puniu", playerName, true)
+		embed.addField("Quem puniu", author.name, true)
 		embed.addField("Motivo", reason, true)
 		embed.addField("Servidor", (author as? ProxiedPlayer)?.server?.info?.name ?: "Desconhecido", true)
 
@@ -411,7 +411,7 @@ class WarnCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("warn"
 		embed.title = "$playerName | Expulso"
 		embed.description = "Fazer o que né, não soube ler as regras! <:sad_cat:419474182758334465>"
 
-		embed.addField("Quem puniu", playerName, true)
+		embed.addField("Quem puniu", author.name, true)
 		embed.addField("Motivo", reason, true)
 		embed.addField("Servidor", (author as? ProxiedPlayer)?.server?.info?.name ?: "Desconhecido", true)
 
