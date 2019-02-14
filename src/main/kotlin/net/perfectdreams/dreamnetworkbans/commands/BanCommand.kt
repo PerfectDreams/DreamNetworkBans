@@ -141,8 +141,8 @@ class BanCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("ban", 
 						this.punishedAt = System.currentTimeMillis()
 						this.reason = effectiveReason
 
-						this.temporary = temporary
 						if (temporary) {
+							this.temporary = true
 							this.expiresAt = time
 						}
 					}
