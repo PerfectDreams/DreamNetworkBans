@@ -131,20 +131,19 @@ class BanCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("ban", 
 					return@transaction
 				}
 
-				transaction(Databases.databaseNetwork) {
-					IpBan.new {
-						this.ip = ip
-						this.player = punishedUniqueId!!
 
-						this.punisherName = punisherDisplayName
-						this.punishedBy = (sender as? ProxiedPlayer)?.uniqueId
-						this.punishedAt = System.currentTimeMillis()
-						this.reason = effectiveReason
+				IpBan.new {
+					this.ip = ip
+					this.player = punishedUniqueId!!
 
-						if (temporary) {
-							this.temporary = true
-							this.expiresAt = time
-						}
+					this.punisherName = punisherDisplayName
+					this.punishedBy = (sender as? ProxiedPlayer)?.uniqueId
+					this.punishedAt = System.currentTimeMillis()
+					this.reason = effectiveReason
+
+					if (temporary) {
+						this.temporary = true
+						this.expiresAt = time
 					}
 				}
 			}
