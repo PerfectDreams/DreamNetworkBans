@@ -167,7 +167,7 @@ class WarnCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("warn"
 					§cExpira em: §a4 horas
 				""".trimIndent().toTextComponent())
 
-				announceBan(player.name, player.uniqueId, sender, effectiveReason, silent, true, expires)
+				announceBan(player?.name ?: punishedDisplayName!!, player?.uniqueId ?: punishedUniqueId!!, sender, effectiveReason, silent, true, expires)
 			}
 			
 			5 -> {
@@ -210,7 +210,7 @@ class WarnCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("warn"
 				""".trimIndent().toTextComponent())
 
 
-				announceBan(player.name, player.uniqueId, sender, effectiveReason, silent, true, expires)
+				announceBan(player?.name ?: punishedDisplayName!!, player?.uniqueId ?: punishedUniqueId!!, sender, effectiveReason, silent, true, expires)
 			}
 			
 			6 -> {
@@ -252,7 +252,7 @@ class WarnCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("warn"
 					§cExpira em: §a1 dia
 				""".trimIndent().toTextComponent())
 
-				announceBan(player.name, player.uniqueId, sender, effectiveReason, silent, true, expires)
+				announceBan(player?.name ?: punishedDisplayName!!, player?.uniqueId ?: punishedUniqueId!!, sender, effectiveReason, silent, true, expires)
 			}
 			
 			7 -> {
@@ -293,7 +293,7 @@ class WarnCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("warn"
 					§cExpira em: §a3 dias
 				""".trimIndent().toTextComponent())
 
-				announceBan(player.name, player.uniqueId, sender, effectiveReason, silent, true, expires)
+				announceBan(player?.name ?: punishedDisplayName!!, player?.uniqueId ?: punishedUniqueId!!, sender, effectiveReason, silent, true, expires)
 			}
 			
 			8 -> {
@@ -331,7 +331,7 @@ class WarnCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("warn"
 					§cPor: $punisherDisplayName
 				""".trimIndent().toTextComponent())
 
-				announceBan(player.name, player.uniqueId, sender, effectiveReason, silent, false)
+				announceBan(player?.name ?: punishedDisplayName!!, player?.uniqueId ?: punishedUniqueId!!, sender, effectiveReason, silent, false)
 			}
 		}
 
