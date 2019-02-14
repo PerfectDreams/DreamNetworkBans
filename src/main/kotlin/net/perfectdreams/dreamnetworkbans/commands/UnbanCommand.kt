@@ -13,6 +13,7 @@ import net.perfectdreams.dreamnetworkbans.tables.Bans
 import net.perfectdreams.dreamnetworkbans.tables.GeoLocalizations
 import net.perfectdreams.dreamnetworkbans.tables.IpBans
 import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
@@ -24,7 +25,7 @@ class UnbanCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("unba
 
 		transaction(Databases.databaseNetwork) {
 			Bans.deleteWhere { Bans.player eq punishedUniqueId }
-			IpBans.deleteWhere { IpBans.player eq punishedUniqueId }
+			IpBans.deleteWhere { (IpBans.player eq punishedUniqueId) or (IpBans.ip eq playerName /* caso seja um ip */) }
 		}
 
 		sender.sendMessage("§b$punishedUniqueId§a desbanido com sucesso!".toTextComponent())
