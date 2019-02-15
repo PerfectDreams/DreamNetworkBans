@@ -13,7 +13,6 @@ import net.perfectdreams.dreamcorebungee.utils.Databases
 import net.perfectdreams.dreamnetworkbans.dao.GeoLocalization
 import net.perfectdreams.dreamnetworkbans.tables.GeoLocalizations
 import net.perfectdreams.dreamcorebungee.dao.User
-import net.perfectdreams.dreamcorebungee.utils.extensions.toBytes
 import net.perfectdreams.dreamnetworkbans.dao.Ban
 import net.perfectdreams.dreamnetworkbans.tables.Bans
 import org.jetbrains.exposed.sql.or
