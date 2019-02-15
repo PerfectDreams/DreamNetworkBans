@@ -194,7 +194,7 @@ class BanCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("ban", 
 		embed.title = "$punishedDisplayName | Banido ${if (temporary) "Temporariamente" else "Permanentemente"}"
 		embed.description = "Fazer o que né, não soube ler as regras! <:sad_cat:419474182758334465>"
 
-		embed.addField("Quem puniu", sender.name, true)
+		embed.addField("Quem puniu", (sender as? ProxiedPlayer)?.name ?: "Pantufa", true)
 		embed.addField("Motivo", effectiveReason, true)
 		embed.addField("Servidor", (sender as? ProxiedPlayer)?.server?.info?.name ?: "Desconhecido", true)
 

@@ -58,7 +58,7 @@ class KickCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("kick"
 		embed.title = "$playerName | Expulso"
 		embed.description = "Fazer o que né, não soube ler as regras! <:sad_cat:419474182758334465>"
 
-		embed.addField("Quem puniu", playerName, true)
+		embed.addField("Quem puniu", (author as? ProxiedPlayer)?.name ?: "Pantufa", true)
 		embed.addField("Motivo", reason, true)
 		embed.addField("Servidor", (author as? ProxiedPlayer)?.server?.info?.name ?: "Desconhecido", true)
 
