@@ -12,29 +12,31 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import net.perfectdreams.dreamcorebungee.utils.Databases
 import net.perfectdreams.dreamnetworkbans.dao.GeoLocalization
 import net.perfectdreams.dreamnetworkbans.tables.GeoLocalizations
-import net.perfectdreams.dreamcorebungee.tables.Users
 import net.perfectdreams.dreamcorebungee.dao.User
+import net.perfectdreams.dreamcorebungee.utils.extensions.toBytes
 import net.perfectdreams.dreamnetworkbans.dao.Ban
 import net.perfectdreams.dreamnetworkbans.tables.Bans
+import org.jetbrains.exposed.sql.or
+
 class DupeIpCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("dupeip"), permission = "dreamnetworkbans.dupeip") {
 	
 	@Subcommand
 	fun dupeIp(sender: CommandSender, playerName: String) {
-
 		// Primeiramente vamos pegar o UUID para achar o IP
 		val playerUniqueId = try { UUID.fromString(playerName) } catch (e: IllegalArgumentException) { PunishmentManager.getUniqueId(playerName) }
 	
 		// Vamos pegar o player
-		val playerIP = transaction(Databases.databaseNetwork) {
-			GeoLocalization.find { GeoLocalizations.player eq playerUniqueId}.firstOrNull()
+		val geoLoc = transaction(Databases.databaseNetwork) {
+			GeoLocalization.find { (GeoLocalizations.player eq playerUniqueId) or (GeoLocalizations.ip eq playerName) }.lastOrNull()
 		}
+
 		// Caso achar...
-		if (playerIP != null) {
-			sender.sendMessage("Escaneando ${playerName} em ${playerIP.ip}".toTextComponent())
+		if (geoLoc != null) {
+			sender.sendMessage("Escaneando ${geoLoc.ip}".toTextComponent())
 			
 			// Agora vamos achar todos os players que tem o mesmo IP
 			val geolocalizations = transaction(Databases.databaseNetwork) {
-				GeoLocalization.find { GeoLocalizations.ip eq playerIP.ip }.toList()
+				GeoLocalization.find { GeoLocalizations.ip eq geoLoc.ip }.toList()
 			}
 
 			val uids = geolocalizations.distinctBy { it.player }.map { it.player }
