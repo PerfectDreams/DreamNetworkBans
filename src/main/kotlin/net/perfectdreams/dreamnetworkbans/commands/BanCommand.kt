@@ -24,7 +24,7 @@ import net.perfectdreams.dreamnetworkbans.utils.convertToEpochMillisRelativeToNo
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
-class BanCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("ban", "banir"), permission = "dreamnetworkbans.ban") {
+class BanCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("ban"), permission = "dreamnetworkbans.ban") {
 
 	@Subcommand
 	fun root(sender: CommandSender) {
