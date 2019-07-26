@@ -4,29 +4,40 @@ import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.set
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.connection.ProxiedPlayer
+import net.perfectdreams.dreamcorebungee.dao.User
 import net.perfectdreams.dreamcorebungee.network.DreamNetwork
+import net.perfectdreams.dreamcorebungee.tables.Users
+import net.perfectdreams.dreamcorebungee.utils.Databases
 import net.perfectdreams.dreamcorebungee.utils.DreamUtils
 import net.perfectdreams.dreamcorebungee.utils.ParallaxEmbed
 import net.perfectdreams.dreamcorebungee.utils.extensions.toTextComponent
 import net.perfectdreams.dreamnetworkbans.utils.DateUtils
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
 object PunishmentManager {
 	// 14 dias
 	const val WARN_EXPIRATION = 1_209_600_000
-	
+
 	// 90 dias
 	const val DEFAULT_IPBAN_EXPIRATION = 466_560_000_000
-	
+
 	fun getUniqueId(playerName: String): UUID {
 		// UUIDs podem ser diferentes... mas já que a gente é um offline mode boi, complicar pra quê?
 		return UUID.nameUUIDFromBytes("OfflinePlayer:$playerName".toByteArray(Charsets.UTF_8))
 	}
 
+	fun getUserNameByUniqueId(uniqueId: UUID): String? {
+		return transaction(Databases.databaseNetwork) {
+			User.findById(uniqueId)?.username
+		}
+	}
+
 	/**
 	 * Sends the punishment to Discord
 	 */
-	fun sendPunishmentToDiscord(silent: Boolean, punishedDisplayName: String, punishedUniqueId: UUID, title: String, punisherDisplayName: String, effectiveReason: String? = null, server: String?, time: Long? = null) {
+	fun sendPunishmentToDiscord(silent: Boolean, punishedDisplayName: String, punishedUniqueId: UUID?, title: String, punisherDisplayName: String, effectiveReason: String? = null, server: String?, time: Long? = null) {
 		val embed = ParallaxEmbed()
 
 		embed.title = "$punishedDisplayName | $title"
@@ -42,7 +53,8 @@ object PunishmentManager {
 
 		embed.rgb = ParallaxEmbed.ParallaxColor(114, 137, 218)
 
-		embed.footer = ParallaxEmbed.ParallaxEmbedFooter("UUID do usuário: $punishedUniqueId", null)
+		if (punishedUniqueId != null)
+			embed.footer = ParallaxEmbed.ParallaxEmbedFooter("UUID do usuário: $punishedUniqueId", null)
 		embed.thumbnail = ParallaxEmbed.ParallaxEmbedImage("https://sparklypower.net/api/v1/render/avatar?name=$punishedDisplayName&scale=16")
 
 		val json = jsonObject(
@@ -57,10 +69,17 @@ object PunishmentManager {
 
 	fun getPunisherName(sender: CommandSender): String {
 		return sender.name.let {
-			if (it == "Console")
+			if (it == "CONSOLE")
 				"Pantufa"
 			else it
 		}
+	}
+
+	fun getPunisherName(uniqueId: UUID?): String? {
+		if (uniqueId == null)
+			return "Pantufa"
+
+		return getUserNameByUniqueId(uniqueId)
 	}
 
 	fun getPunishedInfoByString(playerName: String): Punished? {
@@ -103,6 +122,13 @@ object PunishmentManager {
 			return null
 
 		return Punished(punishedDisplayName, punishedUniqueId, player)
+	}
+
+	fun hideIp(ip: String): String {
+		val split = ip.split(".")
+		if (split.size == 4)
+			return "${split[0]}.${split[1]}.XXX.XXX"
+		return "XXX.XXX.XXX.XXX"
 	}
 
 	data class Punished(

@@ -31,7 +31,7 @@ class CheckBanCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("c
 			sender.sendMessage("§eBanido? ${(ban != null).prettyBoolean()}".toTextComponent())
 			if (ban != null) {
 				sender.sendMessage("§eMotivo do Ban: ${ban.reason}".toTextComponent())
-				sender.sendMessage("§eQuem baniu? §b${ban.punisherName}".toTextComponent())
+				sender.sendMessage("§eQuem baniu? §b${PunishmentManager.getPunisherName(ban.punishedBy)}".toTextComponent())
 				sender.sendMessage("§eTemporário? §b${(ban.temporary).prettyBoolean()}".toTextComponent())
 			}
 
@@ -40,10 +40,10 @@ class CheckBanCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("c
 			val invalidWarns = warns.filter { PunishmentManager.WARN_EXPIRATION + it.punishedAt <= System.currentTimeMillis() }.sortedBy { it.punishedAt }
 			sender.sendMessage("§eNúmero de avisos (${validWarns.size} avisos válidos):".toTextComponent())
 			for (invalidWarn in invalidWarns) {
-				sender.sendMessage("§7${invalidWarn.reason} por ${invalidWarn.punishedBy}".toTextComponent())
+				sender.sendMessage("§7${invalidWarn.reason} por ${PunishmentManager.getPunisherName(invalidWarn.punishedBy)}".toTextComponent())
 			}
 			for (validWarn in validWarns) {
-				sender.sendMessage("§a${validWarn.reason} por ${validWarn.punishedBy}".toTextComponent())
+				sender.sendMessage("§a${validWarn.reason} por ${PunishmentManager.getPunisherName(validWarn.punishedBy)}".toTextComponent())
 			}
 		}
 	}

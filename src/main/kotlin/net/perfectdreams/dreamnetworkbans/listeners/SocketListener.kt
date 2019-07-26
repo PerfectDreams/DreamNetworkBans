@@ -3,31 +3,15 @@ package net.perfectdreams.dreamnetworkbans.listeners
 import com.github.salomonbrys.kotson.*
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.chat.BaseComponent
-import net.md_5.bungee.api.chat.HoverEvent
 import net.md_5.bungee.api.connection.ProxiedPlayer
-import net.md_5.bungee.api.event.*
+import net.md_5.bungee.api.event.ChatEvent
+import net.md_5.bungee.api.event.PlayerDisconnectEvent
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
 import net.perfectdreams.dreamcorebungee.network.socket.SocketReceivedEvent
-import net.perfectdreams.dreamcorebungee.utils.Databases
-import net.perfectdreams.dreamcorebungee.utils.DreamUtils
-import net.perfectdreams.dreamcorebungee.utils.extensions.toBaseComponent
 import net.perfectdreams.dreamcorebungee.utils.extensions.toTextComponent
 import net.perfectdreams.dreamnetworkbans.DreamNetworkBans
-import net.perfectdreams.dreamnetworkbans.PunishmentManager
-import net.perfectdreams.dreamnetworkbans.dao.Ban
-import net.perfectdreams.dreamnetworkbans.dao.Fingerprint
-import net.perfectdreams.dreamnetworkbans.dao.GeoLocalization
-import net.perfectdreams.dreamnetworkbans.dao.IpBan
-import net.perfectdreams.dreamnetworkbans.tables.Bans
-import net.perfectdreams.dreamnetworkbans.tables.GeoLocalizations
-import net.perfectdreams.dreamnetworkbans.tables.IpBans
-import net.perfectdreams.dreamnetworkbans.utils.DateUtils
-import net.perfectdreams.dreamnetworkbans.utils.GeoUtils
-import org.jetbrains.exposed.sql.transactions.transaction
-import protocolsupport.api.ProtocolSupportAPI
 import java.util.*
-import java.util.regex.Pattern
 
 class SocketListener(val m: DreamNetworkBans) : Listener {
 	companion object {

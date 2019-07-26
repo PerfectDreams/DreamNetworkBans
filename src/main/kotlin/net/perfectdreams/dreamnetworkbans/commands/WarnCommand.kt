@@ -52,8 +52,8 @@ class WarnCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("warn"
 
 		transaction(Databases.databaseNetwork) {
 			Warn.new {
-				this.player = punishedUniqueId!!
-				this.punishedBy = punishedUniqueId
+				this.player = punishedUniqueId
+				this.punishedBy = if (sender is ProxiedPlayer) sender.uniqueId else null
 				this.punishedAt = System.currentTimeMillis()
 				this.reason = effectiveReason
 			}
@@ -122,8 +122,7 @@ class WarnCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("warn"
 				transaction(Databases.databaseNetwork) {
 					Ban.new {
 						this.player = punishedUniqueId!!
-						this.punisherName = punisherDisplayName
-						this.punishedBy = punishedUniqueId
+						this.punishedBy = if (sender is ProxiedPlayer) sender.uniqueId else null
 						this.punishedAt = System.currentTimeMillis()
 						this.reason = effectiveReason
 						
@@ -134,10 +133,8 @@ class WarnCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("warn"
 					if (ip != null) {
 						IpBan.new {
 							this.ip = ip
-							this.player = punishedUniqueId!!
 
-							this.punisherName = punisherDisplayName
-							this.punishedBy = punishedUniqueId
+							this.punishedBy = if (sender is ProxiedPlayer) sender.uniqueId else null
 							this.punishedAt = System.currentTimeMillis()
 							this.reason = effectiveReason
 							this.temporary = true
@@ -166,8 +163,7 @@ class WarnCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("warn"
 				transaction(Databases.databaseNetwork) {
 					Ban.new {
 						this.player = punishedUniqueId!!
-						this.punisherName = punisherDisplayName
-						this.punishedBy = punishedUniqueId
+						this.punishedBy = if (sender is ProxiedPlayer) sender.uniqueId else null
 						this.punishedAt = System.currentTimeMillis()
 						this.reason = effectiveReason
 						
@@ -178,8 +174,7 @@ class WarnCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("warn"
 					if (ip != null) {
 						IpBan.new {
 							this.ip = ip
-							this.punisherName = punisherDisplayName
-							this.punishedBy = punishedUniqueId
+							this.punishedBy = if (sender is ProxiedPlayer) sender.uniqueId else null
 							this.punishedAt = System.currentTimeMillis()
 							this.reason = effectiveReason
 							this.temporary = true
@@ -209,8 +204,7 @@ class WarnCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("warn"
 				transaction(Databases.databaseNetwork) {
 					Ban.new {
 						this.player = punishedUniqueId!!
-						this.punisherName = punisherDisplayName
-						this.punishedBy = punishedUniqueId
+						this.punishedBy = if (sender is ProxiedPlayer) sender.uniqueId else null
 						this.punishedAt = System.currentTimeMillis()
 						this.reason = effectiveReason
 						
@@ -221,8 +215,7 @@ class WarnCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("warn"
 					if (ip != null) {
 						IpBan.new {
 							this.ip = ip
-							this.punisherName = punisherDisplayName
-							this.punishedBy = punishedUniqueId
+							this.punishedBy = if (sender is ProxiedPlayer) sender.uniqueId else null
 							this.punishedAt = System.currentTimeMillis()
 							this.reason = effectiveReason
 							this.temporary = true
@@ -250,8 +243,7 @@ class WarnCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("warn"
 				transaction(Databases.databaseNetwork) {
 					Ban.new {
 						this.player = punishedUniqueId!!
-						this.punisherName = punisherDisplayName
-						this.punishedBy = punishedUniqueId
+						this.punishedBy = if (sender is ProxiedPlayer) sender.uniqueId else null
 						this.punishedAt = System.currentTimeMillis()
 						this.reason = effectiveReason
 						
@@ -262,8 +254,7 @@ class WarnCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("warn"
 					if (ip != null) {
 						IpBan.new {
 							this.ip = ip
-							this.punisherName = punisherDisplayName
-							this.punishedBy = punishedUniqueId
+							this.punishedBy = if (sender is ProxiedPlayer) sender.uniqueId else null
 							this.punishedAt = System.currentTimeMillis()
 							this.reason = effectiveReason
 							this.temporary = true
@@ -291,8 +282,7 @@ class WarnCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("warn"
 				transaction(Databases.databaseNetwork) {
 					Ban.new {
 						this.player = punishedUniqueId!!
-						this.punisherName = punisherDisplayName
-						this.punishedBy = punishedUniqueId
+						this.punishedBy = if (sender is ProxiedPlayer) sender.uniqueId else null
 						this.punishedAt = System.currentTimeMillis()
 						this.reason = effectiveReason
 						
@@ -302,8 +292,7 @@ class WarnCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("warn"
 					if (ip != null) {
 						IpBan.new {
 							this.ip = ip
-							this.punisherName = punisherDisplayName
-							this.punishedBy = punishedUniqueId
+							this.punishedBy = if (sender is ProxiedPlayer) sender.uniqueId else null
 							this.punishedAt = System.currentTimeMillis()
 							this.reason = effectiveReason
 							this.temporary = true

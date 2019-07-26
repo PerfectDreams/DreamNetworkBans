@@ -1,19 +1,17 @@
 package net.perfectdreams.dreamnetworkbans.listeners
 
-import com.github.salomonbrys.kotson.nullObj
-import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
-import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.md_5.bungee.api.event.LoginEvent
 import net.md_5.bungee.api.event.PreLoginEvent
 import net.md_5.bungee.api.event.ServerKickEvent
 import net.md_5.bungee.api.event.SettingsChangedEvent
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
-import net.perfectdreams.dreamcorebungee.network.DreamNetwork
+import net.md_5.bungee.event.EventPriority
 import net.perfectdreams.dreamcorebungee.utils.Databases
 import net.perfectdreams.dreamcorebungee.utils.DreamUtils
+import net.perfectdreams.dreamcorebungee.utils.extensions.toBaseComponent
 import net.perfectdreams.dreamcorebungee.utils.extensions.toTextComponent
 import net.perfectdreams.dreamnetworkbans.DreamNetworkBans
 import net.perfectdreams.dreamnetworkbans.PunishmentManager
@@ -26,6 +24,7 @@ import net.perfectdreams.dreamnetworkbans.tables.GeoLocalizations
 import net.perfectdreams.dreamnetworkbans.tables.IpBans
 import net.perfectdreams.dreamnetworkbans.utils.DateUtils
 import net.perfectdreams.dreamnetworkbans.utils.GeoUtils
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import protocolsupport.api.ProtocolSupportAPI
 import java.util.regex.Pattern
@@ -38,7 +37,6 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 		if (event.connection.name.toLowerCase() in playerNames) {
 			event.isCancelled = true
 			event.setCancelReason("§cJá há um player com o nome §e${event.connection.name}§c conectado no servidor!".toTextComponent())
-
 			return
 		}
 
@@ -49,15 +47,15 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 
 				m.proxy.scheduler.runAsync(m) {
 					event.isCancelled = true
-					transaction(Databases.databaseNetwork) {
-						IpBan.new {
-							this.ip = event.connection.address.hostString
-							this.punisherName = "Pantufa"
-							this.punishedBy = null
-							this.punishedAt = System.currentTimeMillis()
-							this.reason = "Tentar entrar com uma conta de um membro da equipe.\nMais sorte da próxima vez!"
-						}
+
+					val alreadyBanned = transaction(Databases.databaseNetwork) {
+						IpBans.select {
+							IpBans.ip eq event.connection.address.hostString
+						}.count() != 0
 					}
+
+					if (!alreadyBanned)
+						m.proxy.pluginManager.dispatchCommand(m.proxy.console, "ipban ${event.connection.address.hostString} Tentar entrar com uma conta de um membro da equipe do SparklyPower. Tenha mais sorte na próxima vez! Porque pelo visto você falhou ^-^")
 
 					// Trollei
 					event.setCancelReason("Internal Exception: java.io.IOException: An existing connection was forcibly closed by the remote host".toTextComponent())
@@ -68,14 +66,14 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 		}
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOWEST)
 	fun onLogin(event: LoginEvent) {
 		val pattern = Pattern.compile("[a-zA-Z0-9_]{3,16}")
 		val matcher = pattern.matcher(event.connection.name)
 
 		if (!matcher.matches()) {
 			event.isCancelled = true
-			event.setCancelReason("""
+			event.setCancelReason(*"""
 				§cSeu nickname não atende aos critérios necessários!
 
 				§cProvavelmente:
@@ -83,19 +81,19 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 				§c - Seu nickname contém espaços
 				§c - Seu nickname contém mais de 16 caracteres
 				§c - Seu nickname contém menos de 3 caracteres
-			""".trimIndent().toTextComponent())
+			""".trimIndent().toBaseComponent())
 			return
 		}
 
 		if (event.connection.name.toLowerCase() in m.youtuberNames) {
 			event.isCancelled = true
-			event.setCancelReason("""
+			event.setCancelReason(*"""
 				§eVocê parece ser alguém famoso...
 					|
 					|§aCaso você seja §b${event.connection.name}§a, por favor, mande um email confirmando a sua identidade para §3mrpowergamerbr@perfectdreams.net§a, obrigado! :)
 					|
 					|§aSei que é chato, mas sempre existem aquelas pessoas mal intencionadas que tentam se passar por YouTubers... :(
-					""".trimMargin().toTextComponent())
+					""".trimMargin().toBaseComponent())
 			return
 		}
 
@@ -123,41 +121,26 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 				}
 			}
 
-			if (geoLocalization?.country == "Germany") {
-				DreamNetwork.PANTUFA.sendMessage(
-						"477902981606408222",
-						"${event.connection.name} tentou entrar, mas a gente descobriu que ele é da Alemanha, então a gente só cortou o barato dele. <a:super_lori_happy:543235439713320972>"
-				)
-
-				event.isCancelled = true
-				event.setCancelReason("Internal Exception: java.io.IOException: An existing connection was forcibly closed by the remote host".toTextComponent())
-				event.completeIntent(m)
-				return@runAsync
-			}
-
 			val ban = transaction(Databases.databaseNetwork) {
 				Ban.find { Bans.player eq event.connection.uniqueId }.firstOrNull()
 			}
 
 			if (ban != null) {
 				if (ban.temporary && ban.expiresAt!! < System.currentTimeMillis()) {
-					transaction(Databases.databaseNetwork) {
-						ban.delete()
-					}
-
 					event.completeIntent(m)
 					return@runAsync
 				}
 
 				event.isCancelled = true
-				event.setCancelReason("""
+
+				event.setCancelReason(*"""
 					§cVocê foi ${if (ban.temporary) "temporariamente " else ""}banido!
 					§cMotivo:
 					
 					§a${ban.reason}
-					§cPor: ${ban.punisherName}
+					§cPor: ${PunishmentManager.getPunisherName(ban.punishedBy)}
 					${if (ban.temporary) "§c Expira em: §e${DateUtils.formatDateDiff(ban.expiresAt!!)}" else ""}
-				""".trimIndent().toTextComponent())
+				""".trimIndent().toBaseComponent())
 
 				event.completeIntent(m)
 				return@runAsync
@@ -169,23 +152,19 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 
 			if (ipBan != null) {
 				if (ipBan.temporary && ipBan.expiresAt!! < System.currentTimeMillis()) {
-					transaction(Databases.databaseNetwork) {
-						ipBan.delete()
-					}
-
 					event.completeIntent(m)
 					return@runAsync
 				}
 
 				event.isCancelled = true
-				event.setCancelReason("""
+				event.setCancelReason(*"""
 					§cVocê foi ${if (ipBan.temporary) "temporariamente " else ""}banido!
 					§cMotivo:
 					
 					§a${ipBan.reason}
-					§cPor: ${ipBan.punisherName}
+					§cPor: ${PunishmentManager.getPunisherName(ipBan.punishedBy)}
 					${if (ipBan.temporary) "§c Expira em: §e${DateUtils.formatDateDiff(ipBan.expiresAt!!)}" else ""}
-				""".trimIndent().toTextComponent())
+				""".trimIndent().toBaseComponent())
 
 				event.completeIntent(m)
 				return@runAsync
@@ -215,7 +194,7 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 				this.mainHand = event.player.mainHand
 				this.language = event.player.locale.language
 				this.viewDistance = event.player.viewDistance.toInt()
-				this.version = ProtocolSupportAPI.getProtocolVersion(event.player).name
+				this.version = event.player.pendingConnection.version.toString() // ProtocolSupportAPI.getProtocolVersion(event.player).name
 
 				this.hasCape = event.player.skinParts.hasCape()
 				this.hasHat = event.player.skinParts.hasHat()

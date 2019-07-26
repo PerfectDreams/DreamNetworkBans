@@ -8,11 +8,12 @@ object Bans : LongIdTable() {
 	// UUID do player
 	// Já que a gente vai acessar se o ban existe várias vezes, vamos indexar!
 	val player = uuid("player").index()
+
 	// Punido por...
 	// Sim, pode ser nulo, caso seja nulo, iremos colocar quem puniu como "Pantufa"
 	val punishedBy = uuid("punished_by").nullable()
-	val punisherName = text("punisher_name")
 	val punishedAt = long("punished_at")
+
 	// Motivo da punição
 	val reason = text("reason").nullable()
 	val temporary = bool("temporary").default(false)

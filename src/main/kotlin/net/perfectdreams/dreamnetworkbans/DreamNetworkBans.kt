@@ -57,6 +57,8 @@ class DreamNetworkBans : KotlinPlugin() {
 		registerCommand(AdminChatCommand(this))
 		registerCommand(DiscordCommand(this))
 		registerCommand(GeoIpCommand(this))
+		registerCommand(IpBanCommand(this))
+		registerCommand(IpUnbanCommand(this))
 
 		this.proxy.pluginManager.registerListener(this, LoginListener(this))
 		this.proxy.pluginManager.registerListener(this, SocketListener(this))

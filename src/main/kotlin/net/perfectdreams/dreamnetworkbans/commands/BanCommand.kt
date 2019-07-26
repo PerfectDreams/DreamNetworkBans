@@ -92,9 +92,7 @@ class BanCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("ban"),
 
 				IpBan.new {
 					this.ip = ip
-					this.player = punishedUniqueId!!
 
-					this.punisherName = punisherDisplayName
 					this.punishedBy = (sender as? ProxiedPlayer)?.uniqueId
 					this.punishedAt = System.currentTimeMillis()
 					this.reason = effectiveReason
@@ -108,7 +106,6 @@ class BanCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("ban"),
 
 			Ban.new {
 				this.player = punishedUniqueId!!
-				this.punisherName = punisherDisplayName
 				this.punishedBy = (sender as? ProxiedPlayer)?.uniqueId
 				this.punishedAt = System.currentTimeMillis()
 				this.reason = effectiveReason
@@ -124,9 +121,7 @@ class BanCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("ban"),
 			transaction(Databases.databaseNetwork) {
 				IpBan.new {
 					this.ip = ip
-					this.player = punishedUniqueId!!
 
-					this.punisherName = punisherDisplayName
 					this.punishedBy = (sender as? ProxiedPlayer)?.uniqueId
 					this.punishedAt = System.currentTimeMillis()
 					this.reason = effectiveReason
