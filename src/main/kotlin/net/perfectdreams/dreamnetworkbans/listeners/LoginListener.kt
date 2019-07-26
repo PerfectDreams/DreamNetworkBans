@@ -3,6 +3,7 @@ package net.perfectdreams.dreamnetworkbans.listeners
 import com.github.salomonbrys.kotson.nullObj
 import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.string
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.md_5.bungee.api.event.LoginEvent
 import net.md_5.bungee.api.event.PreLoginEvent
@@ -32,9 +33,9 @@ import java.util.regex.Pattern
 class LoginListener(val m: DreamNetworkBans) : Listener {
 	@EventHandler
 	fun onPreLogin(event: PreLoginEvent) {
-		val playerNames = m.proxy.players.map { it.name }
+		val playerNames = m.proxy.players.map { it.name.toLowerCase() }
 
-		if (event.connection.name in playerNames) {
+		if (event.connection.name.toLowerCase() in playerNames) {
 			event.isCancelled = true
 			event.setCancelReason("§cJá há um player com o nome §e${event.connection.name}§c conectado no servidor!".toTextComponent())
 
@@ -42,13 +43,11 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 		}
 
 		val staffIps = DreamUtils.jsonParser.parse(m.staffIps.readText(Charsets.UTF_8)).obj
-		val entry = staffIps[event.connection.name.toString()].nullString
+		staffIps.entrySet().forEach {
+			if (it.key.toLowerCase() == event.connection.name.toLowerCase() && event.connection.virtualHost.hostString != it.value.string) {
+				event.registerIntent(m)
 
-		event.registerIntent(m)
-
-		m.proxy.scheduler.runAsync(m) {
-			if (entry != null) {
-				if (event.connection.virtualHost.hostString != entry) {
+				m.proxy.scheduler.runAsync(m) {
 					event.isCancelled = true
 					transaction(Databases.databaseNetwork) {
 						IpBan.new {
@@ -59,12 +58,13 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 							this.reason = "Tentar entrar com uma conta de um membro da equipe.\nMais sorte da próxima vez!"
 						}
 					}
+
 					// Trollei
 					event.setCancelReason("Internal Exception: java.io.IOException: An existing connection was forcibly closed by the remote host".toTextComponent())
+					event.completeIntent(m)
+					return@runAsync
 				}
 			}
-			event.completeIntent(m)
-			return@runAsync
 		}
 	}
 
@@ -100,12 +100,12 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 		}
 
 		event.registerIntent(m)
-		
+
 		m.proxy.scheduler.runAsync(m) {
 			val geoLocalization = transaction(Databases.databaseNetwork) {
 				GeoLocalization.find { GeoLocalizations.player eq event.connection.uniqueId }.firstOrNull()
 			}
-			
+
 			if (geoLocalization == null) {
 				// Vamos executar isto em uma thread externa, para evitar problemas
 				m.proxy.scheduler.runAsync(m) {
@@ -144,11 +144,11 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 					transaction(Databases.databaseNetwork) {
 						ban.delete()
 					}
-					
+
 					event.completeIntent(m)
 					return@runAsync
 				}
-				
+
 				event.isCancelled = true
 				event.setCancelReason("""
 					§cVocê foi ${if (ban.temporary) "temporariamente " else ""}banido!
@@ -158,25 +158,25 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 					§cPor: ${ban.punisherName}
 					${if (ban.temporary) "§c Expira em: §e${DateUtils.formatDateDiff(ban.expiresAt!!)}" else ""}
 				""".trimIndent().toTextComponent())
-				
+
 				event.completeIntent(m)
 				return@runAsync
 			}
-			
+
 			val ipBan = transaction(Databases.databaseNetwork) {
 				IpBan.find { IpBans.ip eq event.connection.address.hostString }.firstOrNull()
 			}
-			
+
 			if (ipBan != null) {
 				if (ipBan.temporary && ipBan.expiresAt!! < System.currentTimeMillis()) {
 					transaction(Databases.databaseNetwork) {
 						ipBan.delete()
 					}
-					
+
 					event.completeIntent(m)
 					return@runAsync
 				}
-				
+
 				event.isCancelled = true
 				event.setCancelReason("""
 					§cVocê foi ${if (ipBan.temporary) "temporariamente " else ""}banido!
@@ -186,7 +186,7 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 					§cPor: ${ipBan.punisherName}
 					${if (ipBan.temporary) "§c Expira em: §e${DateUtils.formatDateDiff(ipBan.expiresAt!!)}" else ""}
 				""".trimIndent().toTextComponent())
-				
+
 				event.completeIntent(m)
 				return@runAsync
 			}
@@ -194,7 +194,7 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 			event.completeIntent(m)
 		}
 	}
-	
+
 	@EventHandler
 	fun onDisconnect(event: ServerKickEvent) {
 		// TODO: Remover "event.kickReason", já que está deprecated :whatdog:
@@ -216,7 +216,7 @@ class LoginListener(val m: DreamNetworkBans) : Listener {
 				this.language = event.player.locale.language
 				this.viewDistance = event.player.viewDistance.toInt()
 				this.version = ProtocolSupportAPI.getProtocolVersion(event.player).name
-				
+
 				this.hasCape = event.player.skinParts.hasCape()
 				this.hasHat = event.player.skinParts.hasHat()
 				this.hasJacket = event.player.skinParts.hasJacket()
