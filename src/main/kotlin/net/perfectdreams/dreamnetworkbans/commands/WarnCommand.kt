@@ -29,42 +29,13 @@ class WarnCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("warn"
 
 	@Subcommand
 	fun warn(sender: CommandSender, playerName: String, @InjectArgument(ArgumentType.ALL_ARGUMENTS) reason: String?) {
-		var punishedUniqueId: UUID? = null
-		var punishedDisplayName: String? = null
-
-		// O nosso querido "player name" pode ser várias coisas...
-		// Talvez seja um player online!
-		val player = m.proxy.getPlayer(playerName)
-		if (player != null) {
-			punishedDisplayName = player.displayName
-			punishedUniqueId = player.uniqueId
-		} else {
-			// Talvez seja o UUID de um player online!
-			punishedUniqueId = try {
-				UUID.fromString(playerName)
-			} catch (e: IllegalArgumentException) {
-				null
-			}
-			if (punishedUniqueId != null) {
-				val playerByUuid = m.proxy.getPlayer(punishedUniqueId)
-				if (playerByUuid != null) {
-					punishedUniqueId = playerByUuid.uniqueId
-					punishedDisplayName = playerByUuid.name
-				} else {
-					// ...tá, mas talvez seja o UUID de um player offline!
-					// Caso o UUID seja != null, quer dizer que ele É UM UUID VÁLIDO!!
-					punishedDisplayName = punishedUniqueId.toString()
-				}
-			} else {
-				// Se não, vamos processar como se fosse um player mesmo
-				punishedDisplayName = playerName
-				punishedUniqueId = PunishmentManager.getUniqueId(playerName)
-			}
+		val (punishedDisplayName, punishedUniqueId, player) = PunishmentManager.getPunishedInfoByString(playerName) ?: run {
+			sender.sendMessage("§cEu sei que você tá correndo para avisar aquele mlk meliante... mas eu não conheço ninguém chamado §b$playerName§c... respira um pouco... fica calmo e VEJA O NOME NOVAMENTE!".toTextComponent())
+			return
 		}
 
-		// ...blah
-		if (punishedUniqueId == null && punishedDisplayName == null) {
-			sender.sendMessage("§cEu sei que você tá correndo para avisar aquele mlk meliante... mas eu não conheço ninguém chamado §b$playerName§c... respira um pouco... fica calmo e VEJA O NOME NOVAMENTE!".toTextComponent())
+		if (punishedUniqueId == null) {
+			sender.sendMessage("§cNão conheço o UUID desse cara, sorry!".toTextComponent())
 			return
 		}
 
@@ -76,10 +47,8 @@ class WarnCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("warn"
 			
 			silent = true
 		}
-		
-		val punisherDisplayName = if (sender is ProxiedPlayer) {
-			sender.name
-		} else { "Pantufa" }
+
+		val punisherDisplayName = PunishmentManager.getPunisherName(sender)
 
 		transaction(Databases.databaseNetwork) {
 			Warn.new {
@@ -112,7 +81,17 @@ class WarnCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("warn"
 				if (player != null) {
 					player.disconnect("§cVocê está chegando ao limite de avisos, cuidado!\n§cTotal de avisos: §e$count".toTextComponent())
 
-					announceKick(player.name, player.uniqueId, sender, effectiveReason, silent)
+					PunishmentManager.sendPunishmentToDiscord(
+							silent,
+							punishedDisplayName ?: "Nome desconhecido",
+							punishedUniqueId!!,
+							"Expulso",
+							punisherDisplayName,
+							effectiveReason,
+							(sender as? ProxiedPlayer)?.server?.info?.name,
+							null
+					)
+					// announceKick(player.name, player.uniqueId, sender, effectiveReason, silent)
 				}
 			}
 			
@@ -122,7 +101,17 @@ class WarnCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("warn"
 				if (player != null) {
 					player.disconnect("§cVocê está chegando ao limite de avisos, cuidado!\n§cTotal de avisos: §e$count".toTextComponent())
 
-					announceKick(player.name, player.uniqueId, sender, effectiveReason, silent)
+					PunishmentManager.sendPunishmentToDiscord(
+							silent,
+							punishedDisplayName ?: "Nome desconhecido",
+							punishedUniqueId!!,
+							"Expulso",
+							punisherDisplayName,
+							effectiveReason,
+							(sender as? ProxiedPlayer)?.server?.info?.name,
+							null
+					)
+					// announceKick(player.name, player.uniqueId, sender, effectiveReason, silent)
 				}
 			}
 			
@@ -167,7 +156,7 @@ class WarnCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("warn"
 					§cExpira em: §a4 horas
 				""".trimIndent().toTextComponent())
 
-				announceBan(player?.name ?: punishedDisplayName!!, player?.uniqueId ?: punishedUniqueId!!, sender, effectiveReason, silent, true, expires)
+				// announceBan(player?.name ?: punishedDisplayName!!, player?.uniqueId ?: punishedUniqueId!!, sender, effectiveReason, silent, true, expires)
 			}
 			
 			5 -> {
@@ -210,7 +199,7 @@ class WarnCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("warn"
 				""".trimIndent().toTextComponent())
 
 
-				announceBan(player?.name ?: punishedDisplayName!!, player?.uniqueId ?: punishedUniqueId!!, sender, effectiveReason, silent, true, expires)
+				// announceBan(player?.name ?: punishedDisplayName!!, player?.uniqueId ?: punishedUniqueId!!, sender, effectiveReason, silent, true, expires)
 			}
 			
 			6 -> {
@@ -252,7 +241,7 @@ class WarnCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("warn"
 					§cExpira em: §a1 dia
 				""".trimIndent().toTextComponent())
 
-				announceBan(player?.name ?: punishedDisplayName!!, player?.uniqueId ?: punishedUniqueId!!, sender, effectiveReason, silent, true, expires)
+				// announceBan(player?.name ?: punishedDisplayName!!, player?.uniqueId ?: punishedUniqueId!!, sender, effectiveReason, silent, true, expires)
 			}
 			
 			7 -> {
@@ -293,7 +282,7 @@ class WarnCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("warn"
 					§cExpira em: §a3 dias
 				""".trimIndent().toTextComponent())
 
-				announceBan(player?.name ?: punishedDisplayName!!, player?.uniqueId ?: punishedUniqueId!!, sender, effectiveReason, silent, true, expires)
+				// announceBan(player?.name ?: punishedDisplayName!!, player?.uniqueId ?: punishedUniqueId!!, sender, effectiveReason, silent, true, expires)
 			}
 			
 			8 -> {
@@ -331,111 +320,25 @@ class WarnCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("warn"
 					§cPor: $punisherDisplayName
 				""".trimIndent().toTextComponent())
 
-				announceBan(player?.name ?: punishedDisplayName!!, player?.uniqueId ?: punishedUniqueId!!, sender, effectiveReason, silent, false)
+				// announceBan(player?.name ?: punishedDisplayName!!, player?.uniqueId ?: punishedUniqueId!!, sender, effectiveReason, silent, false)
 			}
 		}
 
 		sender.sendMessage("§b${punishedDisplayName}§a foi punido com sucesso, yay!! ^-^".toTextComponent())
-		val embed = ParallaxEmbed()
 
-		embed.title = "$playerName | Avisado"
-		embed.description = "Fazer o que né, não soube ler as regras! <:sad_cat:419474182758334465>"
-
-		embed.addField("Quem puniu", (sender as? ProxiedPlayer)?.name ?: "Pantufa", true)
-		embed.addField("Motivo", effectiveReason, true)
-		embed.addField("Servidor", (sender as? ProxiedPlayer)?.server?.info?.name ?: "Desconhecido", true)
-
-		embed.rgb = ParallaxEmbed.ParallaxColor(114, 137, 218)
-
-		embed.footer = ParallaxEmbed.ParallaxEmbedFooter("UUID do usuário: $punishedUniqueId", null)
-		embed.thumbnail = ParallaxEmbed.ParallaxEmbedImage("https://sparklypower.net/api/v1/render/avatar?name=$playerName&scale=16")
-
-		val json = jsonObject(
-				"type" to "sendMessage",
-				"message" to " ",
-				"embed" to DreamUtils.gson.toJsonTree(embed)
+		PunishmentManager.sendPunishmentToDiscord(
+				silent,
+				punishedDisplayName ?: "Nome desconhecido",
+				punishedUniqueId,
+				"Avisado",
+				PunishmentManager.getPunisherName(sender),
+				effectiveReason,
+				(sender as? ProxiedPlayer)?.server?.info?.name,
+				null
 		)
 
-		if (silent) {
-			json["textChannelId"] = "506859824034611212"
-
-			DreamNetwork.PANTUFA.sendAsync(json)
-		} else {
-			json["textChannelId"] = "378318041542426634"
-
+		if (!silent) {
 			m.proxy.broadcast("§b${(sender as? ProxiedPlayer)?.name ?: "Pantufa"}§a avisou §c$playerName§a por §6\"§e$reason§6\"§a!".toTextComponent())
-			DreamNetwork.PANTUFA.sendAsync(json)
 		}
 	}
-
-	fun announceBan(playerName: String, uuid: UUID, author: CommandSender, reason: String, silent: Boolean, temporary: Boolean, time: Long = 0) {
-		val embed = ParallaxEmbed()
-
-		embed.title = "$playerName | Banido ${if (temporary) "Temporariamente" else "Permanentemente"}"
-		embed.description = "Fazer o que né, não soube ler as regras! <:sad_cat:419474182758334465>"
-
-		embed.addField("Quem puniu", author.name, true)
-		embed.addField("Motivo", reason, true)
-		embed.addField("Servidor", (author as? ProxiedPlayer)?.server?.info?.name ?: "Desconhecido", true)
-
-		if (temporary) {
-			embed.addField("Duração", DateUtils.formatDateDiff(time), true)
-		}
-
-		embed.rgb = ParallaxEmbed.ParallaxColor(114, 137, 218)
-
-		embed.footer = ParallaxEmbed.ParallaxEmbedFooter("UUID do usuário: $uuid", null)
-		embed.thumbnail = ParallaxEmbed.ParallaxEmbedImage("https://sparklypower.net/api/v1/render/avatar?name=$playerName&scale=16")
-
-		val json = jsonObject(
-				"type" to "sendMessage",
-				"message" to " ",
-				"embed" to DreamUtils.gson.toJsonTree(embed)
-		)
-
-		if (silent) {
-			json["textChannelId"] = "506859824034611212"
-
-			DreamNetwork.PANTUFA.sendAsync(json)
-		} else {
-			json["textChannelId"] = "378318041542426634"
-
-			m.proxy.broadcast("§b${(author as? ProxiedPlayer)?.name ?: "Pantufa"}§a baniu §c$playerName§a por §6\"§e$reason§6\"§a!".toTextComponent())
-			DreamNetwork.PANTUFA.sendAsync(json)
-		}
-	}
-
-	fun announceKick(playerName: String, uuid: UUID, author: CommandSender, reason: String, silent: Boolean) {
-		val embed = ParallaxEmbed()
-
-		embed.title = "$playerName | Expulso"
-		embed.description = "Fazer o que né, não soube ler as regras! <:sad_cat:419474182758334465>"
-
-		embed.addField("Quem puniu", author.name, true)
-		embed.addField("Motivo", reason, true)
-		embed.addField("Servidor", (author as? ProxiedPlayer)?.server?.info?.name ?: "Desconhecido", true)
-
-		embed.rgb = ParallaxEmbed.ParallaxColor(114, 137, 218)
-
-		embed.footer = ParallaxEmbed.ParallaxEmbedFooter("UUID do usuário: $uuid", null)
-		embed.thumbnail = ParallaxEmbed.ParallaxEmbedImage("https://sparklypower.net/api/v1/render/avatar?name=$playerName&scale=16")
-
-		val json = jsonObject(
-				"type" to "sendMessage",
-				"message" to " ",
-				"embed" to DreamUtils.gson.toJsonTree(embed)
-		)
-
-		if (silent) {
-			json["textChannelId"] = "506859824034611212"
-
-			DreamNetwork.PANTUFA.sendAsync(json)
-		} else {
-			json["textChannelId"] = "378318041542426634"
-
-			m.proxy.broadcast("§b${(author as? ProxiedPlayer)?.name ?: "Pantufa"}§a expulsou §c$playerName§a por §6\"§e$reason§6\"§a!".toTextComponent())
-			DreamNetwork.PANTUFA.sendAsync(json)
-		}
-	}
-
 }

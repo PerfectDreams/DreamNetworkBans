@@ -17,6 +17,10 @@ import java.util.concurrent.ConcurrentHashMap
 
 
 class DreamNetworkBans : KotlinPlugin() {
+	companion object {
+		lateinit var INSTANCE: DreamNetworkBans
+	}
+
 	val youtubersFile by lazy { File(this.dataFolder, "youtubers.json") }
 	var youtuberNames = mutableSetOf<String>()
 
@@ -34,6 +38,7 @@ class DreamNetworkBans : KotlinPlugin() {
 
 	override fun onEnable() {
 		super.onEnable()
+		INSTANCE = this
 
 		// Caso seja reload
 		loggedInPlayers.addAll(this.proxy.players.map { it.uniqueId })

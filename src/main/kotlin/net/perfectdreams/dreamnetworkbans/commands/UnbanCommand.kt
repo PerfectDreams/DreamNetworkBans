@@ -1,6 +1,7 @@
 package net.perfectdreams.dreamnetworkbans.commands
 
 import net.md_5.bungee.api.CommandSender
+import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.perfectdreams.commands.annotation.Subcommand
 import net.perfectdreams.dreamcorebungee.commands.SparklyBungeeCommand
 import net.perfectdreams.dreamcorebungee.utils.Databases
@@ -21,13 +22,31 @@ class UnbanCommand(val m: DreamNetworkBans) : SparklyBungeeCommand(arrayOf("unba
 
 	@Subcommand
     fun unban(sender: CommandSender, playerName: String) {
-		val punishedUniqueId = try { UUID.fromString(playerName) } catch (e: IllegalArgumentException) { PunishmentManager.getUniqueId(playerName) }
+		val (punishedDisplayName, punishedUniqueId, player) = PunishmentManager.getPunishedInfoByString(playerName) ?: run {
+			sender.sendMessage("§cEu sei que você tá correndo para desbanir aquele mlk meliante... mas eu não conheço ninguém chamado §b$playerName§c... respira um pouco... fica calmo e VEJA O NOME NOVAMENTE!".toTextComponent())
+			return
+		}
+
+		if (punishedUniqueId == null) {
+			sender.sendMessage("§cNão conheço o UUID desse cara, sorry!".toTextComponent())
+			return
+		}
 
 		transaction(Databases.databaseNetwork) {
 			Bans.deleteWhere { Bans.player eq punishedUniqueId }
-			IpBans.deleteWhere { (IpBans.player eq punishedUniqueId) or (IpBans.ip eq playerName /* caso seja um ip */) }
 		}
 
-		sender.sendMessage("§b$punishedUniqueId§a desbanido com sucesso!".toTextComponent())
+		sender.sendMessage("§b${punishedUniqueId}/${punishedDisplayName}§a foi desbanido com sucesso!".toTextComponent())
+
+		PunishmentManager.sendPunishmentToDiscord(
+				false,
+				punishedDisplayName ?: "Nome desconhecido",
+				punishedUniqueId,
+				"Desbanido",
+				PunishmentManager.getPunisherName(sender),
+				null,
+				(sender as? ProxiedPlayer)?.server?.info?.name,
+				null
+		)
 	}
 }

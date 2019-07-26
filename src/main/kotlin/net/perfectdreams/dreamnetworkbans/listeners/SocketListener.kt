@@ -1,6 +1,8 @@
 package net.perfectdreams.dreamnetworkbans.listeners
 
 import com.github.salomonbrys.kotson.*
+import net.md_5.bungee.api.CommandSender
+import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.chat.HoverEvent
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.md_5.bungee.api.event.*
@@ -60,7 +62,7 @@ class SocketListener(val m: DreamNetworkBans) : Listener {
 	}
 
 	@EventHandler
-	fun onLogin(e: SocketReceivedEvent) {
+	fun onSocketReceived(e: SocketReceivedEvent) {
 		val type = e.json["type"].nullString ?: return
 
 		// Exemplo de JSON...
@@ -87,6 +89,77 @@ class SocketListener(val m: DreamNetworkBans) : Listener {
 
 				staff.forEach { it.sendMessage(tc) }
 			}
+			"executeCommand" -> {
+				val player = e.json["player"].nullString
+				val command = e.json["command"].string
+
+				val commandSender = if (player != null) {
+					FakeCommandSender(player)
+				} else {
+					m.proxy.console
+				}
+
+				m.logger.info { "Dispatching command $command by $player!" }
+
+				m.proxy.pluginManager.dispatchCommand(commandSender, command)
+
+				if (commandSender is FakeCommandSender) {
+					e.response["messages"] = commandSender.output.toJsonArray()
+				}
+			}
+		}
+	}
+
+	class FakeCommandSender(val playerName: String) : CommandSender {
+		val output = mutableListOf<String>()
+
+		override fun sendMessage(p0: String) {
+			output.add(p0)
+		}
+
+		override fun sendMessage(vararg p0: BaseComponent?) {
+			p0.filterNotNull().forEach {
+				output.add(it.toPlainText())
+			}
+		}
+
+		override fun sendMessage(p0: BaseComponent?) {
+			if (p0 == null)
+				return
+
+			output.add(p0.toPlainText())
+		}
+
+		override fun addGroups(vararg p0: String?) {
+			TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		}
+
+		override fun setPermission(p0: String?, p1: Boolean) {
+			TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		}
+
+		override fun getName(): String {
+			return playerName
+		}
+
+		override fun removeGroups(vararg p0: String?) {
+			TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		}
+
+		override fun sendMessages(vararg p0: String?) {
+			TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		}
+
+		override fun getGroups(): MutableCollection<String> {
+			TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		}
+
+		override fun getPermissions(): MutableCollection<String> {
+			TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		}
+
+		override fun hasPermission(p0: String?): Boolean {
+			return true
 		}
 	}
 }
